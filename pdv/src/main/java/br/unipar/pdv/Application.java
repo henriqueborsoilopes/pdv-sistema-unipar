@@ -1,6 +1,6 @@
 package br.unipar.pdv;
 
-import br.unipar.pdv.view.frame.MainController;
+import br.unipar.pdv.view.MainController;
 import javax.swing.SwingUtilities;
 
 public class Application {

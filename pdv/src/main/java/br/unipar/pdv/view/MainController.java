@@ -1,4 +1,4 @@
-package br.unipar.pdv.view.frame;
+package br.unipar.pdv.view;
 
 import javax.swing.JFrame;
 
