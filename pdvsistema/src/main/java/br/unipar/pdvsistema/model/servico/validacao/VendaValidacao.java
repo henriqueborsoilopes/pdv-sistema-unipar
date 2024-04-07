@@ -7,6 +7,8 @@ public class VendaValidacao {
     
     public static void validarVenda(Venda venda) throws ValidacaoExcecao {
         ValidacaoExcecao erro = new ValidacaoExcecao("Validação");
-        throw erro;
+        if (!erro.getErros().isEmpty()) {
+            throw erro;
+        }
     }
 }

@@ -7,7 +7,7 @@ public class TransacaoBD {
     private static EntityTransaction transaction;
     
     public static EntityTransaction getTransaction() {
-        transaction = ControlladorBD.getEntityManager().getTransaction();
+        transaction = ControladorBD.getEntityManager().getTransaction();
         return transaction;
     }
 }

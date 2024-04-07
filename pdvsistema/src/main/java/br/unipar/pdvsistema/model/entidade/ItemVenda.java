@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 public class ItemVenda {
     
     @EmbeddedId
-    private ItemVendaPK id;
+    private ItemVendaPK id = new ItemVendaPK();
     private String descricao;
     private Integer quantidade;
     private Double valorUnit;

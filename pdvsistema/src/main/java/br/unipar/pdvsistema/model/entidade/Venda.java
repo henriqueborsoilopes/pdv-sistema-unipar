@@ -1,5 +1,6 @@
 package br.unipar.pdvsistema.model.entidade;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +26,7 @@ public class Venda {
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
     
-    @OneToMany(mappedBy = "id.venda")
+    @OneToMany(mappedBy = "id.venda", cascade = CascadeType.MERGE)
     private List<ItemVenda> itens = new ArrayList<>();
     
     public Venda() { }

@@ -2,6 +2,7 @@ package br.unipar.pdvsistema.model.entidade.pk;
 
 import br.unipar.pdvsistema.model.entidade.Produto;
 import br.unipar.pdvsistema.model.entidade.Venda;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -12,10 +13,12 @@ public class ItemVendaPK {
     
     @ManyToOne
     @JoinColumn(name = "id_venda")
+    @JsonIgnore
     private Venda venda;
     
     @ManyToOne
     @JoinColumn(name = "id_produto")
+    @JsonIgnore
     private Produto produto;
     
     public ItemVendaPK() { }

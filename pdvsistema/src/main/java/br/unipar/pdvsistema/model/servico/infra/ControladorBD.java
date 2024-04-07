@@ -2,11 +2,11 @@ package br.unipar.pdvsistema.model.servico.infra;
 
 import jakarta.persistence.EntityManager;
 
-public class ControlladorBD {
+public class ControladorBD {
         
     private static EntityManager em;
     
-    public ControlladorBD() { }
+    public ControladorBD() { }
     
     public static EntityManager getEntityManager() {
         if (em == null || !em.isOpen()) {
@@ -16,7 +16,7 @@ public class ControlladorBD {
         return em;
     }
     
-    public static void getCloseEntityManager() {
+    public static void closeEntityManager() {
         if (em != null) {
             em = null;
         }

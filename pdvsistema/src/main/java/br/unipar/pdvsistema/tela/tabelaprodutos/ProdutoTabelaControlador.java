@@ -1,24 +1,22 @@
 package br.unipar.pdvsistema.tela.tabelaprodutos;
 
-import br.unipar.pdvsistema.model.entidade.Cliente;
 import br.unipar.pdvsistema.model.entidade.Produto;
-import br.unipar.pdvsistema.model.repositorio.ClienteRepositorio;
 import br.unipar.pdvsistema.model.repositorio.ProdutoRepositorio;
-import br.unipar.pdvsistema.model.servico.ClienteServico;
 import br.unipar.pdvsistema.model.servico.ProdutoServico;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.TableColumn;
 
 public class ProdutoTabelaControlador extends javax.swing.JFrame {
     
-    private Cliente cliente = null;
-
-    public ProdutoTabelaControlador() {
+    private ProdutoSelecionadoListener produtoSelecionadoListener;
+    
+    public ProdutoTabelaControlador(Component component) {
         initComponents();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(component);
+        setVisible(true);
         carregarTabela();
         
         tabelaProdutos.setRowHeight(30);
@@ -31,21 +29,23 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
         });
     }
     
-    public Cliente getClienteSelecionado() {
-        return cliente;
+    public void addProdutoSelecionadoListener(ProdutoSelecionadoListener produtoSelecionadoListener) {
+        this.produtoSelecionadoListener = produtoSelecionadoListener;
     }
     
     private void setClienteSelecionado(int rowIndex) {
-        // Verifica se o clique ocorreu dentro dos limites da tabela
         if (rowIndex >= 0 && rowIndex < tabelaProdutos.getRowCount()) {
-            // Obtém os dados da linha clicada
-            String id = tabelaProdutos.getValueAt(rowIndex, 0).toString(); // Supondo que o nome do cliente está na coluna 0
-            String nome = tabelaProdutos.getValueAt(rowIndex, 1).toString(); // Supondo que o nome do cliente está na coluna 0
-            String telefone = tabelaProdutos.getValueAt(rowIndex, 2).toString(); // Supondo que o telefone do cliente está na coluna 1
-            String cpf = tabelaProdutos.getValueAt(rowIndex, 3).toString(); // Supondo que o CPF do cliente está na coluna 2
-
-            // Faça o que quiser com os dados do cliente clicado
-            cliente = new Cliente(Long.valueOf(id), nome, telefone, cpf);
+            String codigo = tabelaProdutos.getValueAt(rowIndex, 1).toString();
+            String descricao = tabelaProdutos.getValueAt(rowIndex, 2).toString();
+            String valorUnit = tabelaProdutos.getValueAt(rowIndex, 3).toString();
+            
+            Produto produto = new Produto(Long.valueOf(codigo), descricao, Double.valueOf(valorUnit));
+            
+            if (produtoSelecionadoListener != null) {
+                produtoSelecionadoListener.produtoSelecionado(produto);
+            }
+            
+            dispose();
         }
     }
     
@@ -62,10 +62,12 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
         List<Produto> produtos = new ArrayList<>();
         produtos.addAll(new ProdutoServico(new ProdutoRepositorio()).acharTodosPaginado("", 1, 16));
         ProdutoTabelaModelo modelo = new ProdutoTabelaModelo(produtos);
-        TableColumn selectionColumn = tabelaProdutos.getColumnModel().getColumn(0);
-        selectionColumn.setCellRenderer(new ProdutoButtonRenderer());
-        selectionColumn.setCellEditor(new ProdutoButtonEditor());
         tabelaProdutos.setModel(modelo);
+    }
+    
+    @Override
+    public void dispose() {
+        super.dispose(); 
     }
 
     @SuppressWarnings("unchecked")
@@ -85,6 +87,7 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 500));
         setResizable(false);
 

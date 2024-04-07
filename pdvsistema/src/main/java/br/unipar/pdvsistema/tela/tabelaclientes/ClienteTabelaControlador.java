@@ -3,19 +3,20 @@ package br.unipar.pdvsistema.tela.tabelaclientes;
 import br.unipar.pdvsistema.model.entidade.Cliente;
 import br.unipar.pdvsistema.model.repositorio.ClienteRepositorio;
 import br.unipar.pdvsistema.model.servico.ClienteServico;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.TableColumn;
 
 public class ClienteTabelaControlador extends javax.swing.JFrame {
-    
-    private Cliente cliente = null;
+   
+    private ClienteSelecionadoListener clienteSelecionadoListener;
 
-    public ClienteTabelaControlador() {
+    public ClienteTabelaControlador(Component component) {
         initComponents();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(component);
+        setVisible(true);
         carregarTabela();
         
         tabelaClientes.setRowHeight(30);
@@ -28,21 +29,27 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
         });
     }
     
-    public Cliente getClienteSelecionado() {
-        return cliente;
+    public void addClienteSelecionadoListener(ClienteSelecionadoListener clienteSelecionadoListener) {
+        this.clienteSelecionadoListener = clienteSelecionadoListener;
     }
     
     private void setClienteSelecionado(int rowIndex) {
         // Verifica se o clique ocorreu dentro dos limites da tabela
         if (rowIndex >= 0 && rowIndex < tabelaClientes.getRowCount()) {
             // Obtém os dados da linha clicada
-            String id = tabelaClientes.getValueAt(rowIndex, 0).toString(); // Supondo que o nome do cliente está na coluna 0
-            String nome = tabelaClientes.getValueAt(rowIndex, 1).toString(); // Supondo que o nome do cliente está na coluna 0
-            String telefone = tabelaClientes.getValueAt(rowIndex, 2).toString(); // Supondo que o telefone do cliente está na coluna 1
+            String id = tabelaClientes.getValueAt(rowIndex, 1).toString(); // Supondo que o nome do cliente está na coluna 0
+            String nome = tabelaClientes.getValueAt(rowIndex, 2).toString(); // Supondo que o nome do cliente está na coluna 0
             String cpf = tabelaClientes.getValueAt(rowIndex, 3).toString(); // Supondo que o CPF do cliente está na coluna 2
-
+            String telefone = tabelaClientes.getValueAt(rowIndex, 4).toString(); // Supondo que o telefone do cliente está na coluna 1
+            
             // Faça o que quiser com os dados do cliente clicado
-            cliente = new Cliente(Long.valueOf(id), nome, telefone, cpf);
+            Cliente cliente = new Cliente(Long.valueOf(id), nome, telefone, cpf);
+            
+            if (clienteSelecionadoListener != null) {
+                clienteSelecionadoListener.clienteSelecionado(cliente);
+            }
+            
+            dispose();
         }
     }
     
@@ -59,10 +66,12 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
         List<Cliente> clientes = new ArrayList<>();
         clientes.addAll(new ClienteServico(new ClienteRepositorio()).acharTodosPaginado("", 1, 16));
         ClienteTabelaModelo modelo = new ClienteTabelaModelo(clientes);
-        TableColumn selectionColumn = tabelaClientes.getColumnModel().getColumn(0);
-        selectionColumn.setCellRenderer(new ClienteButtonRenderer());
-        selectionColumn.setCellEditor(new ClienteButtonEditor());
         tabelaClientes.setModel(modelo);
+    }
+    
+    @Override
+    public void dispose() {
+        super.dispose(); 
     }
 
     @SuppressWarnings("unchecked")
@@ -82,6 +91,7 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 500));
         setResizable(false);
 
