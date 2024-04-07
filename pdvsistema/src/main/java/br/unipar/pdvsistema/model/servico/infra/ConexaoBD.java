@@ -11,7 +11,7 @@ public class ConexaoBD {
     
     public static EntityManagerFactory getEntityManagerFactory() {
         if (emf == null) {
-            emf = Persistence.createEntityManagerFactory("pdvsistema");
+            emf = Persistence.createEntityManagerFactory("br.unipar.pdvsistema");
             System.out.println("conexão aberta!");
         }
         return emf;
@@ -19,7 +19,7 @@ public class ConexaoBD {
     
     public static void closeEntityManagerFactory() {
         if (emf != null && emf.isOpen()) {
-            emf.close();
+            emf = null;
             System.out.println("conexão fechada!");
         }
     }

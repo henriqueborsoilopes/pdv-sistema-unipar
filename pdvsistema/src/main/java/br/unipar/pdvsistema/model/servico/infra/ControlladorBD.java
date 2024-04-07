@@ -9,7 +9,7 @@ public class ControlladorBD {
     public ControlladorBD() { }
     
     public static EntityManager getEntityManager() {
-        if(em == null || !em.isOpen()) {
+        if (em == null || !em.isOpen()) {
             em = ConexaoBD.getEntityManagerFactory().createEntityManager();
             System.out.println("entity manager aberta!");
         }
@@ -18,7 +18,7 @@ public class ControlladorBD {
     
     public static void getCloseEntityManager() {
         if (em != null) {
-            em.close();
+            em = null;
         }
     }
 }
