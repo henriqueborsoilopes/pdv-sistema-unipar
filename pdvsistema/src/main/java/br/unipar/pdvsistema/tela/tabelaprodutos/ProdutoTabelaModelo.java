@@ -8,7 +8,7 @@ public class ProdutoTabelaModelo extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
     
     private final List<Produto> produtos;
-    private final String[] colunas = {"Seleção", "Código", "Descrição", "Valor Unit"};
+    private final String[] colunas = {"Código", "Descrição", "Valor Unit"};
 
     public ProdutoTabelaModelo(List<Produto> produtos) {
         this.produtos = produtos;
@@ -28,9 +28,9 @@ public class ProdutoTabelaModelo extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Produto produto = produtos.get(rowIndex);
         return switch (columnIndex) {
-            case 1 -> produto.getId();
-            case 2 -> produto.getDescricao();
-            case 3 -> produto.getValorUnit();
+            case 0 -> produto.getId();
+            case 1 -> produto.getDescricao();
+            case 2 -> produto.getValorUnit();
             default -> null;
         };
     }

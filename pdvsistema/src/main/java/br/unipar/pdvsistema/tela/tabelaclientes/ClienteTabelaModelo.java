@@ -8,7 +8,7 @@ public class ClienteTabelaModelo extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
     
     private final List<Cliente> clientes;
-    private final String[] colunas = {"Seleção", "Código", "Nome", "Telefone", "CPF"};
+    private final String[] colunas = {"Código", "Nome", "Telefone", "CPF"};
 
     public ClienteTabelaModelo(List<Cliente> clientes) {
         this.clientes = clientes;
@@ -28,10 +28,10 @@ public class ClienteTabelaModelo extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Cliente cliente = clientes.get(rowIndex);
         return switch (columnIndex) {
-            case 1 -> cliente.getId();
-            case 2 -> cliente.getNome();
-            case 3 -> cliente.getTelefone();
-            case 4 -> cliente.getCpf();
+            case 0 -> cliente.getId();
+            case 1 -> cliente.getNome();
+            case 2 -> cliente.getTelefone();
+            case 3 -> cliente.getCpf();
             default -> null;
         };
     }

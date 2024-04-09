@@ -1,8 +1,8 @@
 package br.unipar.pdvsistema.model.servico;
 
+import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Produto;
 import br.unipar.pdvsistema.model.repositorio.ProdutoRepositorio;
-import java.util.List;
 
 public class ProdutoServico {
     
@@ -12,7 +12,7 @@ public class ProdutoServico {
         this.repository = repository;
     }
     
-    public List<Produto> acharTodosPaginado(String descricao, int qtdRegistro, int pagina) {
-        return repository.acharTodosPaginado(descricao, qtdRegistro, pagina);
+    public PaginaDTO<Produto> acharTodosPaginado(String nome, int numPagina, int tamPagina) {
+        return repository.acharTodosPaginado(nome, numPagina, tamPagina);
     }
 }

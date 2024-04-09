@@ -1,17 +1,20 @@
 package br.unipar.pdvsistema.tela.tabelaclientes;
 
+import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Cliente;
 import br.unipar.pdvsistema.model.repositorio.ClienteRepositorio;
 import br.unipar.pdvsistema.model.servico.ClienteServico;
 import java.awt.Component;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClienteTabelaControlador extends javax.swing.JFrame {
    
+    private PaginaDTO<Cliente> pagina = new PaginaDTO<>(0, 10, 0);
     private ClienteSelecionadoListener clienteSelecionadoListener;
+    private String pesquisarNome = "";
 
     public ClienteTabelaControlador(Component component) {
         initComponents();
@@ -19,7 +22,14 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
         setVisible(true);
         carregarTabela();
         
-        tabelaClientes.setRowHeight(30);
+        tabelaClientes.setRowHeight(29);
+        txtNumPagina.setText(String.valueOf(pagina.getNumPagina() + 1));
+        btAnterior.setText("← " + String.valueOf(pagina.getNumPagina() + 1));
+        btAnterior.setEnabled(false);
+        btProximo.setText(pagina.getPaginaAtual() + " →");
+        
+        txtPesquisar.requestFocus();
+        txtPesquisar.addKeyListener(keyPressed());
         
         tabelaClientes.addMouseListener(new MouseAdapter() {
             @Override
@@ -27,6 +37,89 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
                 setClienteSelecionado(tabelaClientes.rowAtPoint(e.getPoint()));
             }
         });
+        
+        btAnterior.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                paginaAnterior();
+            }
+        });
+        
+        btProximo.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                proximaPagina();
+          }
+        });
+        
+        btPesquisar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                pesquisar();
+            }
+        });
+    }
+        
+    private KeyAdapter keyPressed() {
+        return new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> pesquisar();
+                    case KeyEvent.VK_LEFT-> paginaAnterior();
+                    case KeyEvent.VK_RIGHT -> proximaPagina();
+                }
+            }
+        };
+    }
+    
+    public void paginaAnterior() {
+        if (btAnterior.isEnabled()) {
+            int numPg = pagina.getNumPagina();
+            pagina.setNumPagina(numPg -= 1);
+            txtNumPagina.setText(String.valueOf(pagina.getNumPagina() + 1));
+            if (pagina.getNumPagina() >= 1) {
+                btAnterior.setText("← " + String.valueOf(pagina.getNumPagina()));
+            }
+            btProximo.setEnabled(true);
+            carregarTabela();
+            if (pagina.getNumPagina() < 1) {
+                btAnterior.setEnabled(false);
+            }
+        }
+    }
+    
+    public void proximaPagina() {
+        if (btProximo.isEnabled()) {
+            btAnterior.setEnabled(true);
+            int numPg = pagina.getNumPagina();
+            pagina.setNumPagina(numPg += 1);
+            txtNumPagina.setText(String.valueOf(pagina.getNumPagina() + 1));
+            if (pagina.getNumPagina() >= 2) {
+                btAnterior.setText("← " + String.valueOf(pagina.getNumPagina()));
+            }
+            carregarTabela();
+            if (pagina.isUltimaPagina()) {
+                btProximo.setEnabled(false);
+            }
+        }
+    }
+    
+    public void pesquisar() {
+        pesquisarNome = txtPesquisar.getText();
+        pagina.setNumPagina(0);
+        carregarTabela();
+        txtNumPagina.setText(String.valueOf(pagina.getNumPagina() + 1));
+        btAnterior.setText("← " + String.valueOf(pagina.getNumPagina() + 1));
+        btAnterior.setEnabled(false);
+        if (pagina.isUltimaPagina()) {
+            btProximo.setEnabled(false);
+            btProximo.setText("1 →");
+        } else {
+            btProximo.setEnabled(true);
+            btProximo.setText(String.valueOf(pagina.getPaginaAtual()) + " →");
+        }
+        txtPesquisar.setText("");
     }
     
     public void addClienteSelecionadoListener(ClienteSelecionadoListener clienteSelecionadoListener) {
@@ -34,15 +127,12 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
     }
     
     private void setClienteSelecionado(int rowIndex) {
-        // Verifica se o clique ocorreu dentro dos limites da tabela
         if (rowIndex >= 0 && rowIndex < tabelaClientes.getRowCount()) {
-            // Obtém os dados da linha clicada
-            String id = tabelaClientes.getValueAt(rowIndex, 1).toString(); // Supondo que o nome do cliente está na coluna 0
-            String nome = tabelaClientes.getValueAt(rowIndex, 2).toString(); // Supondo que o nome do cliente está na coluna 0
-            String cpf = tabelaClientes.getValueAt(rowIndex, 3).toString(); // Supondo que o CPF do cliente está na coluna 2
-            String telefone = tabelaClientes.getValueAt(rowIndex, 4).toString(); // Supondo que o telefone do cliente está na coluna 1
+            String id = tabelaClientes.getValueAt(rowIndex, 0).toString(); 
+            String nome = tabelaClientes.getValueAt(rowIndex, 1).toString();
+            String cpf = tabelaClientes.getValueAt(rowIndex, 2).toString();
+            String telefone = tabelaClientes.getValueAt(rowIndex, 3).toString();
             
-            // Faça o que quiser com os dados do cliente clicado
             Cliente cliente = new Cliente(Long.valueOf(id), nome, telefone, cpf);
             
             if (clienteSelecionadoListener != null) {
@@ -53,19 +143,9 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
         }
     }
     
-    private void exclirClienteSelecionado() {
-        if (1 != -1) {
-            // Remove a linha selecionada do modelo da tabela
-            tabelaClientes.remove(1);
-        } else {
-            // Caso nenhuma linha esteja selecionada, exiba uma mensagem ou trate o caso conforme necessário
-        }
-    }
-    
     private void carregarTabela() {
-        List<Cliente> clientes = new ArrayList<>();
-        clientes.addAll(new ClienteServico(new ClienteRepositorio()).acharTodosPaginado("", 1, 16));
-        ClienteTabelaModelo modelo = new ClienteTabelaModelo(clientes);
+        pagina = new ClienteServico(new ClienteRepositorio()).acharTodosPaginado(pesquisarNome, pagina.getNumPagina(), pagina.getTamPagina());
+        ClienteTabelaModelo modelo = new ClienteTabelaModelo(pagina.getConteudo());
         tabelaClientes.setModel(modelo);
     }
     
@@ -78,32 +158,35 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        background = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        txtPesquisar = new javax.swing.JTextField();
+        btPesquisar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelaClientes = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btAnterior = new javax.swing.JButton();
+        txtNumPagina = new javax.swing.JTextField();
+        btProximo = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 500));
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        background.setBackground(new java.awt.Color(51, 51, 51));
+        background.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        jPanel2.setBackground(new java.awt.Color(102, 102, 102));
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jTextField2.setToolTipText("");
-        jTextField2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtPesquisar.setToolTipText("");
+        txtPesquisar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jButton2.setText("Pesquisar");
-        jButton2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btPesquisar.setBackground(new java.awt.Color(0, 0, 102));
+        btPesquisar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btPesquisar.setForeground(new java.awt.Color(255, 255, 255));
+        btPesquisar.setText("Pesquisar (Enter)");
+        btPesquisar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -111,50 +194,50 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btPesquisar, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                    .addComponent(txtPesquisar))
+                .addContainerGap())
         );
 
         tabelaClientes.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         tabelaClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Seleção", "Código", "Nome", "CPF", "Telefone"
+                "Código", "Nome", "CPF", "Telefone"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -167,23 +250,29 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tabelaClientes);
         if (tabelaClientes.getColumnModel().getColumnCount() > 0) {
-            tabelaClientes.getColumnModel().getColumn(0).setMinWidth(75);
-            tabelaClientes.getColumnModel().getColumn(0).setMaxWidth(75);
-            tabelaClientes.getColumnModel().getColumn(1).setMinWidth(50);
-            tabelaClientes.getColumnModel().getColumn(1).setMaxWidth(50);
+            tabelaClientes.getColumnModel().getColumn(0).setMinWidth(50);
+            tabelaClientes.getColumnModel().getColumn(0).setMaxWidth(50);
         }
 
-        jButton1.setText("< 1");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jPanel3.setBackground(new java.awt.Color(102, 102, 102));
 
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("2");
-        jTextField1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btAnterior.setBackground(new java.awt.Color(0, 0, 102));
+        btAnterior.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btAnterior.setForeground(new java.awt.Color(255, 255, 255));
+        btAnterior.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btAnterior.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        jToggleButton1.setText("10 >");
-        jToggleButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jToggleButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        txtNumPagina.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        txtNumPagina.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtNumPagina.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtNumPagina.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        txtNumPagina.setEnabled(false);
+
+        btProximo.setBackground(new java.awt.Color(0, 0, 102));
+        btProximo.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btProximo.setForeground(new java.awt.Color(255, 255, 255));
+        btProximo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btProximo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -191,11 +280,11 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNumPagina, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btProximo, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -203,49 +292,38 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNumPagina, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(1, 1, 1)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(btProximo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btAnterior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
 
-        jButton3.setText("Excluir seleção");
-
-        jButton4.setText("Confirmar seleção");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout backgroundLayout = new javax.swing.GroupLayout(background);
+        background.setLayout(backgroundLayout);
+        backgroundLayout.setHorizontalGroup(
+            backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(backgroundLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 799, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        backgroundLayout.setVerticalGroup(
+            backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(backgroundLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton3)
-                        .addComponent(jButton4)))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -253,26 +331,24 @@ public class ClienteTabelaControlador extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(background, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(background, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel background;
+    private javax.swing.JButton btAnterior;
+    private javax.swing.JButton btPesquisar;
+    private javax.swing.JToggleButton btProximo;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JTable tabelaClientes;
+    private javax.swing.JTextField txtNumPagina;
+    private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
 }

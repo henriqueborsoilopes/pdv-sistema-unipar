@@ -1,5 +1,6 @@
 package br.unipar.pdvsistema.model.repositorio;
 
+import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Produto;
 import br.unipar.pdvsistema.model.servico.infra.ConexaoBD;
 import br.unipar.pdvsistema.model.servico.infra.ControladorBD;
@@ -9,20 +10,27 @@ import java.util.List;
 
 public class ProdutoRepositorio {
     
-    public List<Produto> acharTodosPaginado(String descricao, int qtdRegistro, int pagina) {
+    public PaginaDTO<Produto> acharTodosPaginado(String nome, int numPagina, int tamPagina) {        
         EntityManager em = ControladorBD.getEntityManager();
         
         String query = "SELECT DISTINCT obj FROM Produto obj WHERE obj.descricao LIKE :descricao ORDER BY obj.descricao ASC";
         TypedQuery<Produto> authorQuery = em.createQuery(query, Produto.class);
-        authorQuery.setParameter("descricao", "%" + descricao + "%");
-        authorQuery.setFirstResult(qtdRegistro);
-        authorQuery.setMaxResults(pagina);
+        authorQuery.setParameter("descricao", "%" + nome + "%");
+        authorQuery.setFirstResult(numPagina);
+        authorQuery.setMaxResults(tamPagina);
+        
+        TypedQuery<Long> countQuery = em.createQuery("SELECT COUNT(obj) FROM Produto obj WHERE obj.descricao LIKE :nome", Long.class);
+        countQuery.setParameter("nome", "%" + nome + "%");
+        long totalElementos = countQuery.getSingleResult();
         
         List<Produto> produtos = authorQuery.getResultList();
         
         ControladorBD.closeEntityManager();
         ConexaoBD.closeEntityManagerFactory();
         
-        return produtos;
+        PaginaDTO<Produto> entidades = new PaginaDTO(numPagina, tamPagina, totalElementos);
+        entidades.getConteudo().addAll(produtos);
+        
+        return entidades;
     }
 }

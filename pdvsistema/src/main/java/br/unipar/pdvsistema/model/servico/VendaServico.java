@@ -1,12 +1,12 @@
 package br.unipar.pdvsistema.model.servico;
 
 import br.unipar.pdvsistema.model.entidade.Venda;
-import br.unipar.pdvsistema.model.servico.infra.TransacaoBD;
 import br.unipar.pdvsistema.model.repositorio.VendaRepositorio;
 import br.unipar.pdvsistema.model.servico.excecao.BancoDadosExcecao;
 import br.unipar.pdvsistema.model.servico.excecao.ValidacaoExcecao;
 import br.unipar.pdvsistema.model.servico.infra.ConexaoBD;
 import br.unipar.pdvsistema.model.servico.infra.ControladorBD;
+import br.unipar.pdvsistema.model.servico.infra.TransacaoBD;
 import br.unipar.pdvsistema.model.servico.validacao.VendaValidacao;
 
 public class VendaServico {

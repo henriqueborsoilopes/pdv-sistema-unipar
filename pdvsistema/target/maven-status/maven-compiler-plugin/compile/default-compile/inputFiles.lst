@@ -2,6 +2,7 @@ C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\mod
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\entidade\ItemVenda.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\servico\ClienteServico.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\tabelaprodutos\ProdutoTabelaControlador.java
+C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\dto\PaginaDTO.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\Pdvsistema.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\tabelaclientes\ClienteTabelaModelo.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\repositorio\VendaRepositorio.java
@@ -19,6 +20,7 @@ C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\mod
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\relatorio\RelatorioControlador.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\tabelaprodutos\ProdutoTabelaModelo.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\repositorio\ClienteRepositorio.java
+C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\util\MathUtil.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\servico\ProdutoServico.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\tabelaprodutos\ProdutoSelecionadoListener.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\entidade\Produto.java
