@@ -2,6 +2,7 @@ package br.unipar.pdvsistema.tela;
 
 import br.unipar.pdvsistema.model.entidade.Cliente;
 import br.unipar.pdvsistema.model.entidade.ItemVenda;
+import br.unipar.pdvsistema.model.entidade.Pagamento;
 import br.unipar.pdvsistema.model.entidade.Produto;
 import br.unipar.pdvsistema.model.entidade.Venda;
 import br.unipar.pdvsistema.model.repositorio.VendaRepositorio;
@@ -9,17 +10,14 @@ import br.unipar.pdvsistema.model.servico.VendaServico;
 import br.unipar.pdvsistema.model.servico.excecao.BancoDadosExcecao;
 import br.unipar.pdvsistema.model.servico.excecao.ValidacaoExcecao;
 import br.unipar.pdvsistema.tela.relatorio.RelatorioControlador;
-import br.unipar.pdvsistema.tela.tabelaclientes.ClienteTabelaControlador;
-import br.unipar.pdvsistema.tela.tabelaprodutos.ProdutoTabelaControlador;
+import br.unipar.pdvsistema.tela.tabelacliente.ClienteTabelaControlador;
+import br.unipar.pdvsistema.tela.tabelapagamento.PagamentoTabelaControlador;
+import br.unipar.pdvsistema.tela.tabelaproduto.ProdutoTabelaControlador;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class MainControlador extends JFrame {
     
@@ -47,7 +45,7 @@ public class MainControlador extends JFrame {
         btNovoCliente.addKeyListener(keyPressed());
         btNovoProduto.addKeyListener(keyPressed());
         btSalvarVenda.addKeyListener(keyPressed());
-        jButton2.addKeyListener(keyPressed());
+        btAdicionarPagamento.addKeyListener(keyPressed());
         jButton6.addKeyListener(keyPressed());
         tabelaItens.addKeyListener(keyPressed());
         tabelaPagamentos.addKeyListener(keyPressed());
@@ -87,7 +85,10 @@ public class MainControlador extends JFrame {
             venda.setDesconto(Double.valueOf(txtDescontoVenda.getText()));
             atualizarVenda();
         });
-
+        
+        btAdicionarPagamento.addActionListener((ActionEvent e) -> {
+            abrirPagamentoTabelaControlador();
+        });
     }
     
     private KeyAdapter keyPressed() {
@@ -102,6 +103,7 @@ public class MainControlador extends JFrame {
                     case KeyEvent.VK_ENTER -> addItemVenda();
                     case KeyEvent.VK_F9 -> novaVenda();
                     case KeyEvent.VK_F5 -> salvarVenda();
+                    case KeyEvent.VK_F3 -> abrirPagamentoTabelaControlador();
                 }
             }
         };
@@ -203,6 +205,23 @@ public class MainControlador extends JFrame {
         });
     }
     
+    private void abrirPagamentoTabelaControlador() {
+        PagamentoTabelaControlador controlador = new PagamentoTabelaControlador(this, venda.getValorTotal());
+        controlador.addPagamentoSelecionadoListener((Pagamento pagamento1) -> {
+            venda.addPagamento(pagamento1);
+            exibirPagamento();
+            synchronized (MainControlador.this) {
+                MainControlador.this.notify();
+            }
+        });
+    }
+    
+    private void exibirPagamento() {
+        MainPagamentoTabelaModelo modelo = new MainPagamentoTabelaModelo(venda.getPagamentos());
+        tabelaPagamentos.setModel(modelo);
+        exibirVenda();
+    }
+    
     private void exibirProduto(Produto produto) {
         this.produto = produto;
         txtCodigoProduto.setText(produto.getId().toString());
@@ -260,7 +279,7 @@ public class MainControlador extends JFrame {
         txtNomeCliente = new javax.swing.JTextField();
         txtCodigoCliente = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        btAdicionarPagamento = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tabelaPagamentos = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
@@ -544,11 +563,11 @@ public class MainControlador extends JFrame {
         jPanel5.setBackground(new java.awt.Color(102, 102, 102));
         jPanel5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jButton2.setBackground(new java.awt.Color(0, 0, 102));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("+ Novo pagamento (F3)");
-        jButton2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btAdicionarPagamento.setBackground(new java.awt.Color(0, 0, 102));
+        btAdicionarPagamento.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btAdicionarPagamento.setForeground(new java.awt.Color(255, 255, 255));
+        btAdicionarPagamento.setText("+ Novo pagamento (F3)");
+        btAdicionarPagamento.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         tabelaPagamentos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         tabelaPagamentos.setModel(new javax.swing.table.DefaultTableModel(
@@ -585,14 +604,14 @@ public class MainControlador extends JFrame {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btAdicionarPagamento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btAdicionarPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
@@ -820,6 +839,7 @@ public class MainControlador extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel background;
     private javax.swing.JButton btAdicionarDesconto;
+    private javax.swing.JButton btAdicionarPagamento;
     private javax.swing.JButton btAdicionarProduto;
     private javax.swing.JButton btAumentarQtd;
     private javax.swing.JButton btDiminuirQtd;
@@ -827,7 +847,6 @@ public class MainControlador extends JFrame {
     private javax.swing.JButton btNovoCliente;
     private javax.swing.JButton btNovoProduto;
     private javax.swing.JButton btSalvarVenda;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

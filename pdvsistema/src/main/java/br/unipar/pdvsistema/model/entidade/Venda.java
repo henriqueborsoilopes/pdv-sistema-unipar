@@ -26,6 +26,9 @@ public class Venda {
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
     
+    @OneToMany(mappedBy = "pagamento", cascade = CascadeType.MERGE)
+    private List<Pagamento> pagamentos = new ArrayList<>();
+    
     @OneToMany(mappedBy = "id.venda", cascade = CascadeType.MERGE)
     private List<ItemVenda> itens = new ArrayList<>();
     
@@ -68,6 +71,14 @@ public class Venda {
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
+    
+    public List<Pagamento> getPagamentos() {
+        return pagamentos;
+    }
+
+    public void addPagamento(Pagamento pagamento) {
+        this.pagamentos.add(pagamento);
+    }
 
     public List<ItemVenda> getItens() {
         return itens;
@@ -76,7 +87,7 @@ public class Venda {
     public void addItem(ItemVenda item) {
         this.itens.add(item);
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 5;

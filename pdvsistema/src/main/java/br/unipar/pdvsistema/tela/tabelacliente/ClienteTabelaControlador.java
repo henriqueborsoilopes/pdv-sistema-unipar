@@ -1,4 +1,4 @@
-package br.unipar.pdvsistema.tela.tabelaclientes;
+package br.unipar.pdvsistema.tela.tabelacliente;
 
 import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Cliente;

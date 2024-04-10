@@ -1,4 +1,4 @@
-package br.unipar.pdvsistema.tela.tabelaprodutos;
+package br.unipar.pdvsistema.tela.tabelaproduto;
 
 import br.unipar.pdvsistema.model.entidade.Produto;
 
