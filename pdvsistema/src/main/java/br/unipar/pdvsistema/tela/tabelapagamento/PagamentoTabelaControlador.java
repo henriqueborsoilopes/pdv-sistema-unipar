@@ -41,11 +41,16 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         btConfirmar.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (pagamentoSelecionadoListener != null) {
-                    pagamentoSelecionadoListener.pagamentoSelecionado(new Pagamento(null, ALLBITS, valorTotalVenda, TipoPagamento.DINHEIRO, venda));
-                }
+                setPagamentoSelecionado();
             }
         });
+    }
+    
+    private void setPagamentoSelecionado() {
+        if (pagamentoSelecionadoListener != null) {
+            pagamentoSelecionadoListener.pagamentoSelecionado(new Pagamento(null, 1, valorTotalVenda, TipoPagamento.DINHEIRO, null));
+        }
+        dispose();
     }
     
     private void carregarDados() {
@@ -62,7 +67,7 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_ENTER -> dispose();
+                    case KeyEvent.VK_ENTER -> setPagamentoSelecionado();
                 }
             }
         };

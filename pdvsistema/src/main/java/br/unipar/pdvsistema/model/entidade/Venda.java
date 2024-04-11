@@ -26,7 +26,7 @@ public class Venda {
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
     
-    @OneToMany(mappedBy = "pagamento", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "venda", cascade = CascadeType.MERGE)
     private List<Pagamento> pagamentos = new ArrayList<>();
     
     @OneToMany(mappedBy = "id.venda", cascade = CascadeType.MERGE)
