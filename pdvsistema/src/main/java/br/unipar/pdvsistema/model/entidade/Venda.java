@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -22,8 +21,7 @@ public class Venda {
     private Long id;
     private Double desconto;
     
-    @ManyToOne
-    @JoinColumn(name = "id_cliente")
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Cliente cliente;
     
     @OneToMany(mappedBy = "venda", cascade = CascadeType.MERGE)
@@ -38,6 +36,10 @@ public class Venda {
         this.id = id;
         this.desconto = desconto;
         this.cliente = cliente;
+    }
+    
+    public boolean vendaQuitada() {
+        return getValorTotalPago().equals(getValorTotal());
     }
     
     public Double getValorParcialPago() {

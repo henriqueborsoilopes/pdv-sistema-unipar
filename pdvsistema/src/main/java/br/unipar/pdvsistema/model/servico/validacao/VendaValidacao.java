@@ -11,6 +11,10 @@ public class VendaValidacao {
            throw new ValidacaoExcecao("Produto", "Por favor, insira um produto.");
         }
         
+        if (!venda.vendaQuitada()) {
+           throw new ValidacaoExcecao("Pagamento", "Por favor, saldo da venda pendente."); 
+        }
+        
         if (venda.getPagamentos().isEmpty()) {
             throw new ValidacaoExcecao("Pagamento", "Por favor, insira um pagamento.");
         }

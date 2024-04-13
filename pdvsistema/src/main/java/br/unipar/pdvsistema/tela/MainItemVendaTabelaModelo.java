@@ -1,7 +1,6 @@
 package br.unipar.pdvsistema.tela;
 
 import br.unipar.pdvsistema.model.entidade.ItemVenda;
-import br.unipar.pdvsistema.util.FormatarUtil;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 

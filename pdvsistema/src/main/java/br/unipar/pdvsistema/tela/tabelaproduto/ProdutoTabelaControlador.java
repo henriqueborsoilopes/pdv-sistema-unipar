@@ -4,7 +4,6 @@ import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Produto;
 import br.unipar.pdvsistema.model.repositorio.ProdutoRepositorio;
 import br.unipar.pdvsistema.model.servico.ProdutoServico;
-import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.Component;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -12,11 +11,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ProdutoTabelaControlador extends javax.swing.JFrame {
+    
+    private String pesquisarNome = "";
    
     private PaginaDTO<Produto> pagina = new PaginaDTO<>(0, 10, 0);
     private ProdutoSelecionadoListener produtoSelecionadoListener;
-    private String pesquisarNome = "";
-
+    
     public ProdutoTabelaControlador(Component component) {
         initComponents();
         setLocationRelativeTo(component);
@@ -133,10 +133,7 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
             String descricao = tabelaProdutos.getValueAt(rowIndex, 1).toString();
             String valorUnit = tabelaProdutos.getValueAt(rowIndex, 2).toString();
             
-            valorUnit = valorUnit.replaceAll("\\.", "");
-            valorUnit = valorUnit.replace(',', '.');
-            
-            Produto produto = new Produto(Long.valueOf(codigo), descricao, FormatarUtil.realParaDouble(valorUnit));
+            Produto produto = new Produto(Long.valueOf(codigo), descricao, Double.valueOf(valorUnit));
             
             if (produtoSelecionadoListener != null) {
                 produtoSelecionadoListener.produtoSelecionado(produto);

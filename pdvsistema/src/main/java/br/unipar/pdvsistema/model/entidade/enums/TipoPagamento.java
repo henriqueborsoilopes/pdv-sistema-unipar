@@ -52,4 +52,16 @@ public enum TipoPagamento {
         }
         throw new IllegalArgumentException("Descrição inválido! " + descricao);
     }
+    
+    public static TipoPagamento paraEnum(Integer codigo){ 
+        if (codigo == null) {
+            return null;
+        }
+        for (TipoPagamento tipo : TipoPagamento.values()) {
+            if (tipo.getCodigo().equals(codigo)) {
+                return tipo;
+            }
+        }
+        throw new IllegalArgumentException("Descrição inválido! " + codigo);
+    }
 }

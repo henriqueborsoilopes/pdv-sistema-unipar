@@ -2,7 +2,6 @@ package br.unipar.pdvsistema.tela.tabelapagamento;
 
 import br.unipar.pdvsistema.model.entidade.Pagamento;
 import br.unipar.pdvsistema.model.entidade.enums.TipoPagamento;
-import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -31,7 +30,6 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         
         comboTipoPagamento.addKeyListener(keyPressed());
         comboQtdParcela.addKeyListener(keyPressed());
-        txtValorEscolhido.addKeyListener(keyPressed());
         txtValorParcela.addKeyListener(keyPressed());
         
         txtValorEscolhido.addFocusListener(new FocusAdapter() {
@@ -41,8 +39,8 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
             }
             @Override
             public void focusLost(FocusEvent e) {
-                valorPago = txtValorEscolhido.getText().isEmpty() ? valorTotalVenda : FormatarUtil.realParaDouble(txtValorEscolhido.getText());
-                txtValorEscolhido.setText(FormatarUtil.doubleParaReal(valorPago));
+                valorPago = txtValorEscolhido.getText().isEmpty() ? valorTotalVenda : Double.valueOf(txtValorEscolhido.getText());
+                txtValorEscolhido.setText(valorPago.toString());
                 atualizarPagamento();
             }
         });
@@ -75,8 +73,8 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         }
         tipoPagamento = (String) comboTipoPagamento.getSelectedItem();
         comboQtdParcela.addItem("1");
-        txtValorEscolhido.setText(FormatarUtil.doubleParaReal(valorTotalVenda));
-        txtValorParcela.setText(FormatarUtil.doubleParaReal(valorTotalVenda));
+        txtValorEscolhido.setText(valorTotalVenda.toString());
+        txtValorParcela.setText(valorTotalVenda.toString());
     }
         
     private KeyAdapter keyPressed() {
@@ -92,7 +90,7 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
     
     private void atualizarPagamento() {
         Double resultado = valorPago / qtdParcela;
-        txtValorParcela.setText(FormatarUtil.doubleParaReal(resultado));
+        txtValorParcela.setText(resultado.toString());
     }
     
     public void addPagamentoSelecionadoListener(PagamentoSelecionadoListener pagamentoSelecionadoListener) {
@@ -102,8 +100,8 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
     private void setPagamentoSelecionado() {
         if (pagamentoSelecionadoListener != null) {
             pagamentoSelecionadoListener.pagamentoSelecionado(new Pagamento(null, qtdParcela, valorPago, TipoPagamento.paraEnum(tipoPagamento), null));
-            dispose();
         }
+        dispose();
     }
     
     @Override

@@ -13,7 +13,6 @@ import br.unipar.pdvsistema.tela.relatorio.RelatorioControlador;
 import br.unipar.pdvsistema.tela.tabelacliente.ClienteTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelapagamento.PagamentoTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelaproduto.ProdutoTabelaControlador;
-import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -60,7 +59,7 @@ public class MainControlador extends JFrame {
         txtDescontoVenda.addKeyListener(keyPressed());
         
         btAdicionarProduto.addActionListener((ActionEvent e) -> {
-            addItemVenda();
+            addProduto();
         });
         
         btNovoCliente.addActionListener((ActionEvent e) -> {
@@ -90,6 +89,7 @@ public class MainControlador extends JFrame {
         btAdicionarDesconto.addActionListener((ActionEvent e) -> {
             venda.setDesconto(Double.valueOf(txtDescontoVenda.getText()));
             atualizarVenda();
+            atualizarCampos();
         });
         
         btAdicionarPagamento.addActionListener((ActionEvent e) -> {
@@ -141,14 +141,10 @@ public class MainControlador extends JFrame {
     
     private void novaVenda() {
         venda = new Venda(null, 0.0, null);
-        exibirVenda();
+        atualizarCampos();
         atualizarItemVendaTabela();
         atualizarPagamentoTabela();
         limparCampos();
-    }
-    
-    private boolean verificarPagamentos() {
-        return venda.getValorTotalPago().equals(venda.getValorTotal());
     }
     
     private void abrirClienteTabelaControlador() {
@@ -156,6 +152,8 @@ public class MainControlador extends JFrame {
         controlador.addClienteSelecionadoListener((Cliente cliente1) -> {
             this.cliente = cliente1;
             exibirCliente();
+            atualizarVenda();
+            atualizarCampos();
             synchronized (MainControlador.this) {
                 MainControlador.this.notify();
             }
@@ -174,11 +172,12 @@ public class MainControlador extends JFrame {
     }
     
     private void abrirPagamentoTabelaControlador() {
-        if (verificarPagamentos()) {
+        if (venda.vendaQuitada()) {
             return;
         }
         PagamentoTabelaControlador controlador = new PagamentoTabelaControlador(this, venda.getValorParcialPago());
         controlador.addPagamentoSelecionadoListener((Pagamento pagamento1) -> {
+            pagamento1.setVenda(venda);
             venda.addPagamento(pagamento1);
             atualizarPagamentoTabela();
             synchronized (MainControlador.this) {
@@ -196,7 +195,7 @@ public class MainControlador extends JFrame {
                     case KeyEvent.VK_DOWN -> diminuirQtd();
                     case KeyEvent.VK_F2 -> abrirClienteTabelaControlador();
                     case KeyEvent.VK_F1 -> abrirProdutoTabelaControlador();
-                    case KeyEvent.VK_ENTER -> addItemVenda();
+                    case KeyEvent.VK_ENTER -> addProduto();
                     case KeyEvent.VK_F9 -> novaVenda();
                     case KeyEvent.VK_F5 -> salvarVenda();
                     case KeyEvent.VK_F3 -> abrirPagamentoTabelaControlador();
@@ -205,11 +204,13 @@ public class MainControlador extends JFrame {
         };
     }
     
-    private void exibirVenda() {
-        txtValorTotalVenda.setText(FormatarUtil.doubleParaReal(venda.getValorTotal()));
-        txtDescontoVenda.setText(FormatarUtil.doubleParaReal(venda.getDesconto()));
-        txtTotalPago.setText(FormatarUtil.doubleParaReal(venda.getValorTotalPago()));
-        txtSaldoFinal.setText(FormatarUtil.doubleParaReal(venda.getValorParcialPago()));
+    private void atualizarCampos() {
+        txtValorTotalVenda.setText(venda.getValorTotal().toString());
+        txtDescontoVenda.setText(venda.getDesconto().toString());
+        txtTotalPago.setText(venda.getValorTotalPago().toString());
+        txtSaldoFinal.setText(venda.getValorParcialPago().toString());
+        txtDescontoProduto.setText("0.0");
+        qtdProduto = 1;
     }
     
     private void exibirProduto() {
@@ -220,17 +221,21 @@ public class MainControlador extends JFrame {
     private void exibirCliente() {
         txtCodigoCliente.setText(cliente.getId().toString());
         txtNomeCliente.setText(cliente.getNome());
-        atualizarVenda();
+    }
+    
+    private void addProduto() {
+        addItemVenda();
+        atualizarItemVendaTabela();
+        atualizarCampos();
+        limparCamposProduto();
     }
     
     private void addItemVenda() {
         if (produto != null) {
             venda.addItem(new ItemVenda(venda, produto, produto.getDescricao(), qtdProduto, produto.getValorUnit(), descontoItem));
-            atualizarItemVendaTabela();
-            limparCamposProduto();
             produto = null;
         }
-    }
+    } 
     
     private void aumentarQtd() {
         qtdProduto += 1;
@@ -255,33 +260,30 @@ public class MainControlador extends JFrame {
     private void atualizarPagamentoTabela() {
         MainPagamentoTabelaModelo modelo = new MainPagamentoTabelaModelo(venda.getPagamentos());
         tabelaPagamentos.setModel(modelo);
-        exibirVenda();
+        atualizarCampos();
     }
     
     private void atualizarItemVendaTabela() {
         MainItemVendaTabelaModelo modelo = new MainItemVendaTabelaModelo(venda.getItens());
         tabelaItens.setModel(modelo);
-        exibirVenda();
     }
     
     private void atualizarVenda() {
         venda.setCliente(cliente);
         venda.setDesconto(descontoVenda);
-        exibirVenda();
     }
     
     private void limparCamposProduto() {
         txtCodigoProduto.setText("");
-        txtDescontoProduto.setText(FormatarUtil.doubleParaReal(0.0));
+        txtDescontoProduto.setText("0.0");
         txtDescricaoProduto.setText("");
-        qtdProduto = 1;
         txtQtd.setText(String.valueOf(qtdProduto));
     }
     
     private void limparCampos() {
         txtCodigoCliente.setText("");
         txtNomeCliente.setText("");
-        txtDescontoVenda.setText(FormatarUtil.doubleParaReal(0.0));
+        txtDescontoVenda.setText("0.0");
     }
     
     @Override

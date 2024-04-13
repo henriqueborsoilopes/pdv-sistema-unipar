@@ -18,7 +18,7 @@ public class Pagamento {
     private Long id;
     private Integer parcelas;
     private Double valorPago;
-    private TipoPagamento tipoPagamento;
+    private Integer tipoPagamento;
     
     @ManyToOne
     private Venda venda;
@@ -29,7 +29,7 @@ public class Pagamento {
         this.id = id;
         this.parcelas = parcelas;
         this.valorPago = valorPago;
-        this.tipoPagamento = tipoPagamento;
+        this.tipoPagamento = tipoPagamento.getCodigo();
         this.venda = venda;
     }
 
@@ -58,11 +58,11 @@ public class Pagamento {
     }
 
     public TipoPagamento getTipoPagamento() {
-        return tipoPagamento;
+        return TipoPagamento.paraEnum(tipoPagamento);
     }
 
     public void setTipoPagamento(TipoPagamento tipoPagamento) {
-        this.tipoPagamento = tipoPagamento;
+        this.tipoPagamento = tipoPagamento.getCodigo();
     }
 
     public Venda getVenda() {

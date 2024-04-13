@@ -11,11 +11,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ClienteTabelaControlador extends javax.swing.JFrame {
+    
+    private String pesquisarNome = "";
    
     private PaginaDTO<Cliente> pagina = new PaginaDTO<>(0, 10, 0);
     private ClienteSelecionadoListener clienteSelecionadoListener;
-    private String pesquisarNome = "";
-
+    
     public ClienteTabelaControlador(Component component) {
         initComponents();
         setLocationRelativeTo(component);
