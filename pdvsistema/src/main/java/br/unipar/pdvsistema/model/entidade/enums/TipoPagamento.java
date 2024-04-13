@@ -2,19 +2,19 @@ package br.unipar.pdvsistema.model.entidade.enums;
 
 public enum TipoPagamento {
     
-    DINHEIRO(1, "Dinheiro", false),
-    CARTAO_CREDITO(2, "Cartão de Crédito", true),
-    CARTAO_DEBITO(3, "Cartão de Débito", true),
-    PIX(4, "Pix", false);
+    DINHEIRO(1, "Dinheiro", 1),
+    CARTAO_CREDITO(2, "Cartão de Crédito", 3),
+    CARTAO_DEBITO(3, "Cartão de Débito", 1),
+    PIX(4, "Pix", 1);
     
     private Integer codigo;
     private String descricao;
-    private boolean permiteParcelar;
+    private Integer qtdParcelas;
     
-    private TipoPagamento(Integer codigo, String descricao, boolean permiteParcelar) {
+    private TipoPagamento(Integer codigo, String descricao, Integer qtdParcelas) {
         this.codigo = codigo;
         this.descricao = descricao;
-        this.permiteParcelar = permiteParcelar;
+        this.qtdParcelas = qtdParcelas;
     }
 
     public Integer getCodigo() {
@@ -33,23 +33,23 @@ public enum TipoPagamento {
         this.descricao = descricao;
     }
 
-    public boolean isPermiteParcelar() {
-        return permiteParcelar;
+    public Integer getQtdParcelas() {
+        return qtdParcelas;
     }
 
-    public void setPermiteParcelar(boolean permiteParcelar) {
-        this.permiteParcelar = permiteParcelar;
+    public void setQtdParcelas(Integer qtdParcelas) {
+        this.qtdParcelas = qtdParcelas;
     }
     
-    public static TipoPagamento paraEnum(Integer codigo){ 
-        if (codigo == null) {
+    public static TipoPagamento paraEnum(String descricao){ 
+        if (descricao == null) {
             return null;
         }
         for (TipoPagamento tipo : TipoPagamento.values()) {
-            if (tipo.getCodigo().equals(codigo)) {
+            if (tipo.getDescricao().equals(descricao)) {
                 return tipo;
             }
         }
-        throw new IllegalArgumentException("Código inválido! " + codigo);
+        throw new IllegalArgumentException("Descrição inválido! " + descricao);
     }
 }

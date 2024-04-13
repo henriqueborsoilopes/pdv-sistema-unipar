@@ -2,8 +2,11 @@ package br.unipar.pdvsistema.tela.tabelapagamento;
 
 import br.unipar.pdvsistema.model.entidade.Pagamento;
 import br.unipar.pdvsistema.model.entidade.enums.TipoPagamento;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -11,31 +14,51 @@ import java.awt.event.MouseEvent;
 
 public class PagamentoTabelaControlador extends javax.swing.JFrame {
     
+    private Double valorTotalVenda = 0.0;
+    private String tipoPagamento = "";
+    private Double valorPago = 0.0;
+    private Integer qtdParcela = 1;
+    
     private PagamentoSelecionadoListener pagamentoSelecionadoListener;
-    private Double valorTotalVenda;
 
-    public PagamentoTabelaControlador(Component component, Double valorTotalVenda) {
-        this.valorTotalVenda = valorTotalVenda;
+    public PagamentoTabelaControlador(Component component, Double valorTotal) {
+        this.valorTotalVenda = valorTotal;
+        this.valorPago = valorTotal;
         initComponents();
         setLocationRelativeTo(component);
         setVisible(true);
-        
         carregarDados();
         
         comboTipoPagamento.addKeyListener(keyPressed());
-        txtQtdParcela.addKeyListener(keyPressed());
+        comboQtdParcela.addKeyListener(keyPressed());
         txtValorEscolhido.addKeyListener(keyPressed());
         txtValorParcela.addKeyListener(keyPressed());
         
-        comboTipoPagamento.addActionListener((ActionEvent e) -> {
-            String tipoPagamento = (String) comboTipoPagamento.getSelectedItem();
-            for (TipoPagamento tipo : TipoPagamento.values()) {
-                if (tipoPagamento.equals(tipo.getDescricao()) && tipo.isPermiteParcelar()) {
-                    txtQtdParcela.setEditable(false);
-                } else {
-                    txtQtdParcela.setEditable(true);
-                }
+        txtValorEscolhido.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                txtValorEscolhido.setText("");
             }
+            @Override
+            public void focusLost(FocusEvent e) {
+                valorPago = txtValorEscolhido.getText().isEmpty() ? valorTotalVenda : FormatarUtil.realParaDouble(txtValorEscolhido.getText());
+                txtValorEscolhido.setText(FormatarUtil.doubleParaReal(valorPago));
+                atualizarPagamento();
+            }
+        });
+        
+        comboTipoPagamento.addActionListener((ActionEvent e) -> {
+            tipoPagamento = (String) comboTipoPagamento.getSelectedItem();
+            TipoPagamento tipo = TipoPagamento.paraEnum(tipoPagamento);
+            for (int i = 1; i <= tipo.getQtdParcelas(); i++) {
+                comboQtdParcela.addItem(String.valueOf(i));
+            }
+            atualizarPagamento();
+        });
+        
+        comboQtdParcela.addActionListener((ActionEvent e) -> {
+            qtdParcela = Integer.valueOf((String) comboQtdParcela.getSelectedItem());
+            atualizarPagamento();
         });
         
         btConfirmar.addMouseListener(new MouseAdapter() {
@@ -46,20 +69,14 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         });
     }
     
-    private void setPagamentoSelecionado() {
-        if (pagamentoSelecionadoListener != null) {
-            pagamentoSelecionadoListener.pagamentoSelecionado(new Pagamento(null, 1, valorTotalVenda, TipoPagamento.DINHEIRO, null));
-        }
-        dispose();
-    }
-    
     private void carregarDados() {
         for (TipoPagamento tipo : TipoPagamento.values()) {
             comboTipoPagamento.addItem(tipo.getDescricao());
         }
-        txtQtdParcela.setText("1");
-        txtValorEscolhido.setText(valorTotalVenda.toString());
-        txtValorParcela.setText(valorTotalVenda.toString());
+        tipoPagamento = (String) comboTipoPagamento.getSelectedItem();
+        comboQtdParcela.addItem("1");
+        txtValorEscolhido.setText(FormatarUtil.doubleParaReal(valorTotalVenda));
+        txtValorParcela.setText(FormatarUtil.doubleParaReal(valorTotalVenda));
     }
         
     private KeyAdapter keyPressed() {
@@ -73,8 +90,20 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         };
     }
     
+    private void atualizarPagamento() {
+        Double resultado = valorPago / qtdParcela;
+        txtValorParcela.setText(FormatarUtil.doubleParaReal(resultado));
+    }
+    
     public void addPagamentoSelecionadoListener(PagamentoSelecionadoListener pagamentoSelecionadoListener) {
         this.pagamentoSelecionadoListener = pagamentoSelecionadoListener;
+    }
+    
+    private void setPagamentoSelecionado() {
+        if (pagamentoSelecionadoListener != null) {
+            pagamentoSelecionadoListener.pagamentoSelecionado(new Pagamento(null, qtdParcela, valorPago, TipoPagamento.paraEnum(tipoPagamento), null));
+            dispose();
+        }
     }
     
     @Override
@@ -93,11 +122,11 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         btConfirmar = new javax.swing.JButton();
         comboTipoPagamento = new javax.swing.JComboBox<>();
-        txtQtdParcela = new javax.swing.JTextField();
         txtValorParcela = new javax.swing.JTextField();
         btAtualizar = new javax.swing.JButton();
         txtValorEscolhido = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        comboQtdParcela = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(760, 140));
@@ -135,10 +164,6 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
 
         comboTipoPagamento.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        txtQtdParcela.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtQtdParcela.setText("0");
-        txtQtdParcela.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
         txtValorParcela.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtValorParcela.setText("00.00");
         txtValorParcela.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -159,6 +184,8 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel4.setText("Valor escolhido");
 
+        comboQtdParcela.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -169,9 +196,9 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
                     .addComponent(comboTipoPagamento, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtQtdParcela)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboQtdParcela, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -199,18 +226,18 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
-                            .addComponent(txtQtdParcela, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(comboTipoPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtValorEscolhido, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btConfirmar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtValorParcela, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btAtualizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(10, 10, 10))))
+                        .addGap(10, 10, 10))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(comboQtdParcela, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(comboTipoPagamento, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                            .addComponent(txtValorEscolhido, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
+                        .addGap(6, 12, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -245,6 +272,7 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAtualizar;
     private javax.swing.JButton btConfirmar;
+    private javax.swing.JComboBox<String> comboQtdParcela;
     private javax.swing.JComboBox<String> comboTipoPagamento;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -252,7 +280,6 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField txtQtdParcela;
     private javax.swing.JTextField txtValorEscolhido;
     private javax.swing.JTextField txtValorParcela;
     // End of variables declaration//GEN-END:variables

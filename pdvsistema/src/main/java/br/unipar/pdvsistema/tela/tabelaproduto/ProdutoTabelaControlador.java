@@ -4,6 +4,7 @@ import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Produto;
 import br.unipar.pdvsistema.model.repositorio.ProdutoRepositorio;
 import br.unipar.pdvsistema.model.servico.ProdutoServico;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.Component;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -132,7 +133,10 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
             String descricao = tabelaProdutos.getValueAt(rowIndex, 1).toString();
             String valorUnit = tabelaProdutos.getValueAt(rowIndex, 2).toString();
             
-            Produto produto = new Produto(Long.valueOf(codigo), descricao, Double.valueOf(valorUnit));
+            valorUnit = valorUnit.replaceAll("\\.", "");
+            valorUnit = valorUnit.replace(',', '.');
+            
+            Produto produto = new Produto(Long.valueOf(codigo), descricao, FormatarUtil.realParaDouble(valorUnit));
             
             if (produtoSelecionadoListener != null) {
                 produtoSelecionadoListener.produtoSelecionado(produto);

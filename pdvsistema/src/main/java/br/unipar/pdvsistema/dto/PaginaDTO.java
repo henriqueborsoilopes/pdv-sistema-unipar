@@ -1,6 +1,6 @@
 package br.unipar.pdvsistema.dto;
 
-import br.unipar.pdvsistema.util.MathUtil;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class PaginaDTO<T> {
     
     public int getPaginaAtual() {
         double pagina = (double) totalElementos / tamPagina;
-        return MathUtil.arredondaParaCima(pagina);
+        return FormatarUtil.arredondaParaCima(pagina);
     }
 
     public List<T> getConteudo() {

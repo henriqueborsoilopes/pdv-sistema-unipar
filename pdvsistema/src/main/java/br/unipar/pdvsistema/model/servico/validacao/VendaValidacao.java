@@ -6,9 +6,13 @@ import br.unipar.pdvsistema.model.servico.excecao.ValidacaoExcecao;
 public class VendaValidacao {
     
     public static void validarVenda(Venda venda) throws ValidacaoExcecao {
-        ValidacaoExcecao erro = new ValidacaoExcecao("Validação");
-        if (!erro.getErros().isEmpty()) {
-            throw erro;
+        
+        if (venda.getItens().isEmpty()) {
+           throw new ValidacaoExcecao("Produto", "Por favor, insira um produto.");
+        }
+        
+        if (venda.getPagamentos().isEmpty()) {
+            throw new ValidacaoExcecao("Pagamento", "Por favor, insira um pagamento.");
         }
     }
 }

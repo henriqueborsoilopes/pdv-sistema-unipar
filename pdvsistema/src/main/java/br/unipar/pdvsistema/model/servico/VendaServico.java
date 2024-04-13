@@ -1,5 +1,6 @@
 package br.unipar.pdvsistema.model.servico;
 
+import br.unipar.pdvsistema.model.entidade.Cliente;
 import br.unipar.pdvsistema.model.entidade.Venda;
 import br.unipar.pdvsistema.model.repositorio.VendaRepositorio;
 import br.unipar.pdvsistema.model.servico.excecao.BancoDadosExcecao;
@@ -19,6 +20,9 @@ public class VendaServico {
     
     public Venda inserir(Venda venda) throws BancoDadosExcecao, ValidacaoExcecao {
         VendaValidacao.validarVenda(venda);
+        if (venda.getCliente() == null) {
+            venda.setCliente(new Cliente(null, "Consumidor Geral", null, null));
+        }
         try {
             TransacaoBD.getTransaction().begin();
             venda = vendaRepository.inserir(venda);

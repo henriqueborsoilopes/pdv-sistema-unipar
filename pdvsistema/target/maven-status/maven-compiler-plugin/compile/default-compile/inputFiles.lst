@@ -11,6 +11,7 @@ C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tel
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\repositorio\VendaRepositorio.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\repositorio\ProdutoRepositorio.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\servico\excecao\BancoDadosExcecao.java
+C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\util\FormatarUtil.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\tabelaproduto\ProdutoSelecionadoListener.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\entidade\Venda.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\MainControlador.java
@@ -24,7 +25,6 @@ C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\mod
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\relatorio\RelatorioControlador.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\tela\tabelacliente\ClienteSelecionadoListener.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\repositorio\ClienteRepositorio.java
-C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\util\MathUtil.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\entidade\Pagamento.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\servico\ProdutoServico.java
 C:\Projetos\pdv-sistema-unipar\pdvsistema\src\main\java\br\unipar\pdvsistema\model\entidade\Produto.java

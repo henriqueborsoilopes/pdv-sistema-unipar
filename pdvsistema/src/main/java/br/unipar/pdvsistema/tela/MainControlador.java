@@ -13,7 +13,10 @@ import br.unipar.pdvsistema.tela.relatorio.RelatorioControlador;
 import br.unipar.pdvsistema.tela.tabelacliente.ClienteTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelapagamento.PagamentoTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelaproduto.ProdutoTabelaControlador;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
@@ -22,6 +25,10 @@ import javax.swing.JOptionPane;
 public class MainControlador extends JFrame {
     
     private Integer qtdProduto = 1;
+    private Double descontoItem = 0.00;
+    private Double descontoVenda = 0.00;
+//    Double.valueOf(txtDescontoProduto.getText())
+//    Double.valueOf(txtDescontoVenda.getText())
     private Produto produto;
     private Cliente cliente;
     private Venda venda;
@@ -36,7 +43,6 @@ public class MainControlador extends JFrame {
         atulizarColunasLinhasTabelaPagamento();
         
         background.requestFocus();
-        
         background.addKeyListener(keyPressed());
         btAdicionarProduto.addKeyListener(keyPressed());
         btAumentarQtd.addKeyListener(keyPressed());
@@ -89,6 +95,96 @@ public class MainControlador extends JFrame {
         btAdicionarPagamento.addActionListener((ActionEvent e) -> {
             abrirPagamentoTabelaControlador();
         });
+        
+        txtDescontoProduto.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                
+            }
+        });
+        
+        txtDescontoVenda.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                
+            }
+        });
+    }
+    
+    private void salvarVenda() {
+        VendaServico servico = new VendaServico(new VendaRepositorio());
+        try {
+            Object[] options = {"Imprimir", "Não"};
+            venda = servico.inserir(venda);
+            int n = JOptionPane.showOptionDialog(null, 
+                    "Gostaria de imprimir o comprovante?", 
+                    "Comprovante", JOptionPane.YES_NO_CANCEL_OPTION,  
+                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+            if (n == 0) {
+                RelatorioControlador.carregaRelatori(venda.getId());
+            }
+            novaVenda();
+        } catch (BancoDadosExcecao ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
+        } catch (ValidacaoExcecao ex) {
+            JOptionPane.showMessageDialog(this, ex.getDescricao(), ex.getCampo(), JOptionPane.ERROR_MESSAGE, null);
+        }
+    }
+    
+    private void novaVenda() {
+        venda = new Venda(null, 0.0, null);
+        exibirVenda();
+        atualizarItemVendaTabela();
+        atualizarPagamentoTabela();
+        limparCampos();
+    }
+    
+    private boolean verificarPagamentos() {
+        return venda.getValorTotalPago().equals(venda.getValorTotal());
+    }
+    
+    private void abrirClienteTabelaControlador() {
+        ClienteTabelaControlador controlador = new ClienteTabelaControlador(this);
+        controlador.addClienteSelecionadoListener((Cliente cliente1) -> {
+            this.cliente = cliente1;
+            exibirCliente();
+            synchronized (MainControlador.this) {
+                MainControlador.this.notify();
+            }
+        });
+    }
+    
+    private void abrirProdutoTabelaControlador() {
+        ProdutoTabelaControlador controlador = new ProdutoTabelaControlador(this);
+        controlador.addProdutoSelecionadoListener((Produto produto1) -> {
+            this.produto = produto1;
+            exibirProduto();
+            synchronized (MainControlador.this) {
+                MainControlador.this.notify();
+            }
+        });
+    }
+    
+    private void abrirPagamentoTabelaControlador() {
+        if (verificarPagamentos()) {
+            return;
+        }
+        PagamentoTabelaControlador controlador = new PagamentoTabelaControlador(this, venda.getValorParcialPago());
+        controlador.addPagamentoSelecionadoListener((Pagamento pagamento1) -> {
+            venda.addPagamento(pagamento1);
+            atualizarPagamentoTabela();
+            synchronized (MainControlador.this) {
+                MainControlador.this.notify();
+            }
+        });
     }
     
     private KeyAdapter keyPressed() {
@@ -109,130 +205,31 @@ public class MainControlador extends JFrame {
         };
     }
     
-    private void salvarVenda() {
-        VendaServico servico = new VendaServico(new VendaRepositorio());
-        try {
-            Object[] options = {"Imprimir", "Não"};
-            
-            venda = servico.inserir(venda);
-            int n = JOptionPane.showOptionDialog(null, 
-                    "Gostaria de imprimir o comprovante?", 
-                    "Comprovante", JOptionPane.YES_NO_CANCEL_OPTION,  
-                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-            if (n == 0) {
-                RelatorioControlador.carregaRelatori(venda.getId());
-            }
-            novaVenda();
-        } catch (BancoDadosExcecao ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-        } catch (ValidacaoExcecao ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-        }
-    }
-    
-    private void atulizarColunasLinhasTabelaItem() {
-        tabelaItens.setRowHeight(30);
-    }
-    
-    private void atulizarColunasLinhasTabelaPagamento() {
-        tabelaPagamentos.setRowHeight(30);
-    }
-    
-    private void limparCamposProduto() {
-        txtCodigoProduto.setText("");
-        txtDescontoProduto.setText("");
-        txtDescricaoProduto.setText("");
-        qtdProduto = 1;
-        txtQtd.setText(String.valueOf(qtdProduto));
-    }
-    
-    private void limparCampos() {
-        txtCodigoCliente.setText("");
-        txtNomeCliente.setText("");
-        txtDescontoVenda.setText("");
-    }
-        
     private void exibirVenda() {
-        txtValorTotalVenda.setText(venda.getValorTotal().toString());
-        txtDescontoVenda.setText(venda.getDesconto().toString());
+        txtValorTotalVenda.setText(FormatarUtil.doubleParaReal(venda.getValorTotal()));
+        txtDescontoVenda.setText(FormatarUtil.doubleParaReal(venda.getDesconto()));
+        txtTotalPago.setText(FormatarUtil.doubleParaReal(venda.getValorTotalPago()));
+        txtSaldoFinal.setText(FormatarUtil.doubleParaReal(venda.getValorParcialPago()));
     }
     
-    private void atualizarVenda() {
-        venda.setCliente(cliente);
-        venda.setDesconto(Double.valueOf(txtDescontoVenda.getText()));
-        exibirVenda();
-    }
-    
-    private void novaVenda() {
-        venda = new Venda(null, 0.00, null);
-        exibirVenda();
-        atualizarItemVendaTabela();
-        limparCampos();
-    }
-    
-    private void addItemVenda() {
-        if (produto != null) {
-            venda.addItem(new ItemVenda(venda, produto, produto.getDescricao(), qtdProduto, produto.getValorUnit(), Double.valueOf(txtDescontoProduto.getText())));
-            atualizarItemVendaTabela();
-            limparCamposProduto();
-            produto = null;
-        }
-    }
-    
-    private void atualizarItemVendaTabela() {
-        MainItemVendaTabelaModelo modelo = new MainItemVendaTabelaModelo(venda.getItens());
-        tabelaItens.setModel(modelo);
-        exibirVenda();
-    }
-    
-    private void abrirClienteTabelaControlador() {
-        ClienteTabelaControlador controlador = new ClienteTabelaControlador(this);
-        controlador.addClienteSelecionadoListener((Cliente cliente1) -> {
-            exibirCliente(cliente1);
-            synchronized (MainControlador.this) {
-                MainControlador.this.notify();
-            }
-        });
-    }
-    
-    private void abrirProdutoTabelaControlador() {
-        ProdutoTabelaControlador controlador = new ProdutoTabelaControlador(this);
-        controlador.addProdutoSelecionadoListener((Produto produto1) -> {
-            exibirProduto(produto1);
-            synchronized (MainControlador.this) {
-                MainControlador.this.notify();
-            }
-        });
-    }
-    
-    private void abrirPagamentoTabelaControlador() {
-        PagamentoTabelaControlador controlador = new PagamentoTabelaControlador(this, venda.getValorTotal());
-        controlador.addPagamentoSelecionadoListener((Pagamento pagamento1) -> {
-            venda.addPagamento(pagamento1);
-            exibirPagamento();
-            synchronized (MainControlador.this) {
-                MainControlador.this.notify();
-            }
-        });
-    }
-    
-    private void exibirPagamento() {
-        MainPagamentoTabelaModelo modelo = new MainPagamentoTabelaModelo(venda.getPagamentos());
-        tabelaPagamentos.setModel(modelo);
-        exibirVenda();
-    }
-    
-    private void exibirProduto(Produto produto) {
-        this.produto = produto;
+    private void exibirProduto() {
         txtCodigoProduto.setText(produto.getId().toString());
         txtDescricaoProduto.setText(produto.getDescricao());
     }
     
-    private void exibirCliente(Cliente cliente) {
-        this.cliente = cliente;
+    private void exibirCliente() {
         txtCodigoCliente.setText(cliente.getId().toString());
         txtNomeCliente.setText(cliente.getNome());
         atualizarVenda();
+    }
+    
+    private void addItemVenda() {
+        if (produto != null) {
+            venda.addItem(new ItemVenda(venda, produto, produto.getDescricao(), qtdProduto, produto.getValorUnit(), descontoItem));
+            atualizarItemVendaTabela();
+            limparCamposProduto();
+            produto = null;
+        }
     }
     
     private void aumentarQtd() {
@@ -245,6 +242,46 @@ public class MainControlador extends JFrame {
             qtdProduto -= 1;
             txtQtd.setText(String.valueOf(qtdProduto));
         }
+    }
+    
+    private void atulizarColunasLinhasTabelaItem() {
+        tabelaItens.setRowHeight(30);
+    }
+    
+    private void atulizarColunasLinhasTabelaPagamento() {
+        tabelaPagamentos.setRowHeight(30);
+    }
+    
+    private void atualizarPagamentoTabela() {
+        MainPagamentoTabelaModelo modelo = new MainPagamentoTabelaModelo(venda.getPagamentos());
+        tabelaPagamentos.setModel(modelo);
+        exibirVenda();
+    }
+    
+    private void atualizarItemVendaTabela() {
+        MainItemVendaTabelaModelo modelo = new MainItemVendaTabelaModelo(venda.getItens());
+        tabelaItens.setModel(modelo);
+        exibirVenda();
+    }
+    
+    private void atualizarVenda() {
+        venda.setCliente(cliente);
+        venda.setDesconto(descontoVenda);
+        exibirVenda();
+    }
+    
+    private void limparCamposProduto() {
+        txtCodigoProduto.setText("");
+        txtDescontoProduto.setText(FormatarUtil.doubleParaReal(0.0));
+        txtDescricaoProduto.setText("");
+        qtdProduto = 1;
+        txtQtd.setText(String.valueOf(qtdProduto));
+    }
+    
+    private void limparCampos() {
+        txtCodigoCliente.setText("");
+        txtNomeCliente.setText("");
+        txtDescontoVenda.setText(FormatarUtil.doubleParaReal(0.0));
     }
     
     @Override
@@ -287,8 +324,8 @@ public class MainControlador extends JFrame {
         btSalvarVenda = new javax.swing.JButton();
         btNovaVenda = new javax.swing.JButton();
         txtValorTotalVenda = new javax.swing.JTextField();
-        jTextField9 = new javax.swing.JTextField();
-        jTextField10 = new javax.swing.JTextField();
+        txtTotalPago = new javax.swing.JTextField();
+        txtSaldoFinal = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -575,11 +612,11 @@ public class MainControlador extends JFrame {
 
             },
             new String [] {
-                "Qtd", "Forma", "Parcela", "Valor Total"
+                "Forma", "Parcela", "Valor Total"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Double.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -588,12 +625,10 @@ public class MainControlador extends JFrame {
         });
         jScrollPane3.setViewportView(tabelaPagamentos);
         if (tabelaPagamentos.getColumnModel().getColumnCount() > 0) {
-            tabelaPagamentos.getColumnModel().getColumn(0).setMinWidth(50);
-            tabelaPagamentos.getColumnModel().getColumn(0).setMaxWidth(50);
-            tabelaPagamentos.getColumnModel().getColumn(2).setMinWidth(50);
-            tabelaPagamentos.getColumnModel().getColumn(2).setMaxWidth(50);
-            tabelaPagamentos.getColumnModel().getColumn(3).setMinWidth(75);
-            tabelaPagamentos.getColumnModel().getColumn(3).setMaxWidth(75);
+            tabelaPagamentos.getColumnModel().getColumn(1).setMinWidth(60);
+            tabelaPagamentos.getColumnModel().getColumn(1).setMaxWidth(60);
+            tabelaPagamentos.getColumnModel().getColumn(2).setMinWidth(80);
+            tabelaPagamentos.getColumnModel().getColumn(2).setMaxWidth(80);
         }
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -655,21 +690,21 @@ public class MainControlador extends JFrame {
         txtValorTotalVenda.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         txtValorTotalVenda.setEnabled(false);
 
-        jTextField9.setEditable(false);
-        jTextField9.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField9.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jTextField9.setText("0,00");
-        jTextField9.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jTextField9.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jTextField9.setEnabled(false);
+        txtTotalPago.setEditable(false);
+        txtTotalPago.setBackground(new java.awt.Color(255, 255, 255));
+        txtTotalPago.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtTotalPago.setText("0,00");
+        txtTotalPago.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        txtTotalPago.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        txtTotalPago.setEnabled(false);
 
-        jTextField10.setEditable(false);
-        jTextField10.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField10.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jTextField10.setText("0,00");
-        jTextField10.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jTextField10.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jTextField10.setEnabled(false);
+        txtSaldoFinal.setEditable(false);
+        txtSaldoFinal.setBackground(new java.awt.Color(255, 255, 255));
+        txtSaldoFinal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtSaldoFinal.setText("0,00");
+        txtSaldoFinal.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        txtSaldoFinal.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        txtSaldoFinal.setEnabled(false);
 
         jLabel1.setBackground(javax.swing.UIManager.getDefaults().getColor("Button.background"));
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -730,8 +765,8 @@ public class MainControlador extends JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtDescontoVenda, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField9, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField10)
+                            .addComponent(txtTotalPago, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtSaldoFinal)
                             .addComponent(btAdicionarDesconto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
                             .addComponent(txtValorTotalVenda))))
                 .addContainerGap())
@@ -751,12 +786,12 @@ public class MainControlador extends JFrame {
                 .addComponent(btAdicionarDesconto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTotalPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtSaldoFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(16, 16, 16)
                 .addComponent(btSalvarVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -865,9 +900,7 @@ public class MainControlador extends JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField9;
     private javax.swing.JTable tabelaItens;
     private javax.swing.JTable tabelaPagamentos;
     private javax.swing.JTextField txtCodigoCliente;
@@ -877,6 +910,8 @@ public class MainControlador extends JFrame {
     private javax.swing.JTextField txtDescricaoProduto;
     private javax.swing.JTextField txtNomeCliente;
     private javax.swing.JTextField txtQtd;
+    private javax.swing.JTextField txtSaldoFinal;
+    private javax.swing.JTextField txtTotalPago;
     private javax.swing.JTextField txtValorTotalVenda;
     // End of variables declaration//GEN-END:variables
 

@@ -40,6 +40,18 @@ public class Venda {
         this.cliente = cliente;
     }
     
+    public Double getValorParcialPago() {
+        return getValorTotal() - getValorTotalPago();
+    }
+    
+    public Double getValorTotalPago() {
+        double pago = 0.0;
+        for (Pagamento pagamento : pagamentos) {
+            pago += pagamento.getValorPago();
+        }
+        return pago;
+    }
+    
     public Double getValorTotal() {
         double valorTotalItem = 0.0;
         for (ItemVenda item : itens) {

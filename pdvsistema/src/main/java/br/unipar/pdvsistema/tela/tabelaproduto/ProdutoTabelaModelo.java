@@ -1,6 +1,7 @@
 package br.unipar.pdvsistema.tela.tabelaproduto;
 
 import br.unipar.pdvsistema.model.entidade.Produto;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 

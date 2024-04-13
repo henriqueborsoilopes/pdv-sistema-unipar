@@ -1,6 +1,7 @@
 package br.unipar.pdvsistema.tela;
 
 import br.unipar.pdvsistema.model.entidade.Pagamento;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
@@ -8,7 +9,7 @@ public class MainPagamentoTabelaModelo extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
     
     private final List<Pagamento> pagamentos;
-    private final String[] colunas = {"Qtd", "Forma", "Parcela", "Valor Total"};
+    private final String[] colunas = {"Forma", "Parcela", "Valor Total"};
 
     public MainPagamentoTabelaModelo(List<Pagamento> pagamentos) {
         this.pagamentos = pagamentos;
@@ -28,10 +29,9 @@ public class MainPagamentoTabelaModelo extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Pagamento pagamento = pagamentos.get(rowIndex);
         return switch (columnIndex) {
-            case 0 -> rowIndex;
-            case 1 -> pagamento.getTipoPagamento().getDescricao();
-            case 2 -> pagamento.getParcelas();
-            case 3 -> pagamento.getValorPago();
+            case 0 -> pagamento.getTipoPagamento().getDescricao();
+            case 1 -> pagamento.getParcelas();
+            case 2 -> FormatarUtil.doubleParaReal(pagamento.getValorPago());
             default -> null;
         };
     }
