@@ -2,6 +2,7 @@ package br.unipar.pdvsistema.tela.tabelapagamento;
 
 import br.unipar.pdvsistema.model.entidade.Pagamento;
 import br.unipar.pdvsistema.model.entidade.enums.TipoPagamento;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -73,8 +74,8 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         }
         tipoPagamento = (String) comboTipoPagamento.getSelectedItem();
         comboQtdParcela.addItem("1");
-        txtValorEscolhido.setText(valorTotalVenda.toString());
-        txtValorParcela.setText(valorTotalVenda.toString());
+        txtValorEscolhido.setText(FormatarUtil.formataCasaDecimal(valorTotalVenda));
+        txtValorParcela.setText(FormatarUtil.formataCasaDecimal(valorTotalVenda));
     }
         
     private KeyAdapter keyPressed() {
@@ -90,7 +91,7 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
     
     private void atualizarPagamento() {
         Double resultado = valorPago / qtdParcela;
-        txtValorParcela.setText(resultado.toString());
+        txtValorParcela.setText(FormatarUtil.formataCasaDecimal(resultado));
     }
     
     public void addPagamentoSelecionadoListener(PagamentoSelecionadoListener pagamentoSelecionadoListener) {
@@ -119,12 +120,12 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         btConfirmar = new javax.swing.JButton();
-        comboTipoPagamento = new javax.swing.JComboBox<>();
+        comboTipoPagamento = new javax.swing.JComboBox<String>();
         txtValorParcela = new javax.swing.JTextField();
         btAtualizar = new javax.swing.JButton();
         txtValorEscolhido = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        comboQtdParcela = new javax.swing.JComboBox<>();
+        comboQtdParcela = new javax.swing.JComboBox<String>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(760, 140));
@@ -175,6 +176,11 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         txtValorEscolhido.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtValorEscolhido.setText("00.00");
         txtValorEscolhido.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtValorEscolhido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtValorEscolhidoActionPerformed(evt);
+            }
+        });
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
@@ -266,6 +272,10 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtValorEscolhidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtValorEscolhidoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtValorEscolhidoActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAtualizar;

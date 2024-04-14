@@ -13,6 +13,7 @@ import br.unipar.pdvsistema.tela.relatorio.RelatorioControlador;
 import br.unipar.pdvsistema.tela.tabelacliente.ClienteTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelapagamento.PagamentoTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelaproduto.ProdutoTabelaControlador;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -203,10 +204,10 @@ public class MainControlador extends JFrame {
     }
     
     private void atualizarCampos() {
-        txtValorTotalVenda.setText(venda.getValorTotal().toString());
-        txtDescontoVenda.setText(venda.getDesconto().toString());
-        txtTotalPago.setText(venda.getValorTotalPago().toString());
-        txtSaldoFinal.setText(venda.getValorParcialPago().toString());
+        txtValorTotalVenda.setText(FormatarUtil.formataCasaDecimal(venda.getValorTotal()));
+        txtDescontoVenda.setText(FormatarUtil.formataCasaDecimal(venda.getDesconto()));
+        txtTotalPago.setText(FormatarUtil.formataCasaDecimal(venda.getValorTotalPago()));
+        txtSaldoFinal.setText(FormatarUtil.formataCasaDecimal(venda.getValorParcialPago()));
         txtDescontoProduto.setText("0.0");
         qtdProduto = 1;
     }
@@ -674,6 +675,11 @@ public class MainControlador extends JFrame {
         btSalvarVenda.setForeground(new java.awt.Color(255, 255, 255));
         btSalvarVenda.setText("Finalizar venda (F5)");
         btSalvarVenda.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btSalvarVenda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btSalvarVendaActionPerformed(evt);
+            }
+        });
 
         btNovaVenda.setBackground(new java.awt.Color(0, 0, 102));
         btNovaVenda.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -870,6 +876,10 @@ public class MainControlador extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btSalvarVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarVendaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btSalvarVendaActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel background;
