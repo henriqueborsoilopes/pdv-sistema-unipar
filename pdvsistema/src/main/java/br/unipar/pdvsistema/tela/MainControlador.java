@@ -26,8 +26,6 @@ public class MainControlador extends JFrame {
     private Integer qtdProduto = 1;
     private Double descontoItem = 0.00;
     private Double descontoVenda = 0.00;
-//    Double.valueOf(txtDescontoProduto.getText())
-//    Double.valueOf(txtDescontoVenda.getText())
     private Produto produto;
     private Cliente cliente;
     private Venda venda;
@@ -99,22 +97,22 @@ public class MainControlador extends JFrame {
         txtDescontoProduto.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                
+                txtDescontoProduto.setText("");
             }
             @Override
             public void focusLost(FocusEvent e) {
-                
+               descontoItem = txtDescontoProduto.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoProduto.getText()); 
             }
         });
         
         txtDescontoVenda.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                
+                txtDescontoVenda.setText("");
             }
             @Override
             public void focusLost(FocusEvent e) {
-                
+                descontoVenda = txtDescontoVenda.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoVenda.getText());
             }
         });
     }

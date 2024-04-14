@@ -51,7 +51,7 @@ INSERT INTO tb_produto (descricao, valorunit) VALUES
 ('Cadeado com chave', 9.90);
 
 
-INSERT INTO tb_usuario (nome, telefone, cpf) VALUES
+INSERT INTO tb_cliente (nome, telefone, cpf) VALUES
 ('Maria Silva', '(11) 91234-5678', '123.456.789-10'),
 ('João Santos', '(21) 99876-5432', '987.654.321-00'),
 ('Ana Oliveira', '(31) 98765-4321', '456.789.123-20'),
