@@ -242,6 +242,14 @@ public class MainControlador extends JFrame {
     
     private void addItemVenda() {
         if (produto != null) {
+            for (ItemVenda item : venda.getItens()) {
+                if (item.getProduto().equals(produto)) {
+                    item.setDesconto(item.getDesconto() + descontoItem);
+                    item.setQuantidade(item.getQuantidade() + qtdProduto);
+                    produto = null;
+                    return;
+                }
+            }
             venda.addItem(new ItemVenda(venda, produto, produto.getDescricao(), qtdProduto, produto.getValorUnit(), descontoItem));
             produto = null;
         }

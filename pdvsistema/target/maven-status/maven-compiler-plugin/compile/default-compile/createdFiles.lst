@@ -23,12 +23,14 @@ br\unipar\pdvsistema\model\servico\infra\TransacaoBD.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador$4.class
 br\unipar\pdvsistema\tela\MainControlador$1.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador.class
+br\unipar\pdvsistema\tela\tabelapagamento\PagamentoTabelaControlador$4.class
 br\unipar\pdvsistema\tela\MainControlador$4.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador$1.class
 br\unipar\pdvsistema\dto\PaginaDTO.class
 br\unipar\pdvsistema\tela\tabelapagamento\PagamentoTabelaControlador$1.class
 br\unipar\pdvsistema\model\servico\infra\ConexaoBD.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador$6.class
+br\unipar\pdvsistema\tela\MainControlador$8.class
 br\unipar\pdvsistema\model\entidade\ItemVenda.class
 br\unipar\pdvsistema\tela\tabelapagamento\PagamentoTabelaControlador.class
 br\unipar\pdvsistema\tela\tabelacliente\ClienteTabelaControlador$5.class
