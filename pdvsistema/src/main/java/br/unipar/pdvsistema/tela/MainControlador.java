@@ -115,6 +115,17 @@ public class MainControlador extends JFrame {
                 descontoVenda = txtDescontoVenda.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoVenda.getText());
             }
         });
+        
+        txtQtd.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                txtQtd.setText("");
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                qtdProduto = txtQtd.getText().isEmpty() ? 1 : Integer.valueOf(txtQtd.getText());
+            }
+        });
     }
     
     private void salvarVenda() {
