@@ -120,12 +120,12 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         btConfirmar = new javax.swing.JButton();
-        comboTipoPagamento = new javax.swing.JComboBox<String>();
+        comboTipoPagamento = new javax.swing.JComboBox<>();
         txtValorParcela = new javax.swing.JTextField();
         btAtualizar = new javax.swing.JButton();
         txtValorEscolhido = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        comboQtdParcela = new javax.swing.JComboBox<String>();
+        comboQtdParcela = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(760, 140));
@@ -176,11 +176,6 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         txtValorEscolhido.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtValorEscolhido.setText("00.00");
         txtValorEscolhido.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        txtValorEscolhido.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtValorEscolhidoActionPerformed(evt);
-            }
-        });
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
@@ -272,10 +267,6 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void txtValorEscolhidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtValorEscolhidoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtValorEscolhidoActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAtualizar;

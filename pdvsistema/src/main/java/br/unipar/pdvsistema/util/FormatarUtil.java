@@ -9,9 +9,9 @@ public class FormatarUtil {
     }
     
     public static String formataCasaDecimal(double valor) {
-    DecimalFormat df = new DecimalFormat("#.##");
-    return df.format(valor);
-}
+        DecimalFormat df = new DecimalFormat("#.##");
+        return df.format(valor);
+    }
     
 //    public static String doubleParaReal(Double valor) {
 //        DecimalFormatSymbols simbolos = new DecimalFormatSymbols();

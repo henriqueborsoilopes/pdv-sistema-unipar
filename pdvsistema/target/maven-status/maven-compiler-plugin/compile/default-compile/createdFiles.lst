@@ -23,7 +23,6 @@ br\unipar\pdvsistema\model\servico\infra\TransacaoBD.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador$4.class
 br\unipar\pdvsistema\tela\MainControlador$1.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador.class
-br\unipar\pdvsistema\tela\tabelapagamento\PagamentoTabelaControlador$4.class
 br\unipar\pdvsistema\tela\MainControlador$4.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador$1.class
 br\unipar\pdvsistema\dto\PaginaDTO.class
