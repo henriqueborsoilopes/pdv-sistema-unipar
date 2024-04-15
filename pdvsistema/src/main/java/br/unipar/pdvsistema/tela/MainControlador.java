@@ -85,12 +85,6 @@ public class MainControlador extends JFrame {
             aumentarQtd();
         });
         
-        btAdicionarDesconto.addActionListener((ActionEvent e) -> {
-            venda.setDesconto(Double.valueOf(txtDescontoVenda.getText()));
-            atualizarVenda();
-            atualizarCampos();
-        });
-        
         btAdicionarPagamento.addActionListener((ActionEvent e) -> {
             abrirPagamentoTabelaControlador();
         });
@@ -103,6 +97,7 @@ public class MainControlador extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                descontoItem = txtDescontoProduto.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoProduto.getText()); 
+               txtDescontoProduto.setText(String.valueOf(descontoItem));
             }
         });
         
@@ -114,6 +109,8 @@ public class MainControlador extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 descontoVenda = txtDescontoVenda.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoVenda.getText());
+                atualizarVenda();
+                atualizarCampos();
             }
         });
         
@@ -125,6 +122,7 @@ public class MainControlador extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 qtdProduto = txtQtd.getText().isEmpty() ? 1 : Integer.valueOf(txtQtd.getText());
+                txtQtd.setText(String.valueOf(qtdProduto));
             }
         });
     }
@@ -164,6 +162,7 @@ public class MainControlador extends JFrame {
             exibirCliente();
             atualizarVenda();
             atualizarCampos();
+            cliente = null;
             synchronized (MainControlador.this) {
                 MainControlador.this.notify();
             }
@@ -221,6 +220,8 @@ public class MainControlador extends JFrame {
         txtSaldoFinal.setText(FormatarUtil.formataCasaDecimal(venda.getValorParcialPago()));
         txtDescontoProduto.setText("0.0");
         qtdProduto = 1;
+        descontoItem = 0.00;
+        descontoVenda = 0.00;
     }
     
     private void exibirProduto() {
@@ -351,7 +352,6 @@ public class MainControlador extends JFrame {
         jLabel4 = new javax.swing.JLabel();
         txtDescontoVenda = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        btAdicionarDesconto = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
 
@@ -757,12 +757,6 @@ public class MainControlador extends JFrame {
         jLabel2.setText("Desconto");
         jLabel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        btAdicionarDesconto.setBackground(new java.awt.Color(0, 0, 102));
-        btAdicionarDesconto.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
-        btAdicionarDesconto.setForeground(new java.awt.Color(255, 255, 255));
-        btAdicionarDesconto.setText("Adicionar Desconto");
-        btAdicionarDesconto.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
         jButton6.setBackground(new java.awt.Color(204, 102, 0));
         jButton6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton6.setForeground(new java.awt.Color(255, 255, 255));
@@ -783,17 +777,16 @@ public class MainControlador extends JFrame {
                         .addComponent(btNovaVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtDescontoVenda, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtTotalPago, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(txtDescontoVenda)
+                            .addComponent(txtTotalPago)
                             .addComponent(txtSaldoFinal)
-                            .addComponent(btAdicionarDesconto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
-                            .addComponent(txtValorTotalVenda))))
+                            .addComponent(txtValorTotalVenda, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -807,9 +800,7 @@ public class MainControlador extends JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtDescontoVenda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btAdicionarDesconto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(47, 47, 47)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTotalPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -902,7 +893,6 @@ public class MainControlador extends JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel background;
-    private javax.swing.JButton btAdicionarDesconto;
     private javax.swing.JButton btAdicionarPagamento;
     private javax.swing.JButton btAdicionarProduto;
     private javax.swing.JButton btAumentarQtd;
