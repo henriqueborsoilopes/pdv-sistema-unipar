@@ -55,7 +55,6 @@ public class MainControlador extends JFrame {
         tabelaPagamentos.addKeyListener(keyPressed());
         txtQtd.addKeyListener(keyPressed());
         txtDescontoProduto.addKeyListener(keyPressed());
-        txtDescontoVenda.addKeyListener(keyPressed());
         
         btAdicionarProduto.addActionListener((ActionEvent e) -> {
             addProduto();
@@ -97,7 +96,7 @@ public class MainControlador extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                descontoItem = txtDescontoProduto.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoProduto.getText()); 
-               txtDescontoProduto.setText(String.valueOf(descontoItem));
+               txtDescontoProduto.setText(FormatarUtil.valorParaBR(descontoItem));
             }
         });
         
@@ -110,7 +109,20 @@ public class MainControlador extends JFrame {
             public void focusLost(FocusEvent e) {
                 descontoVenda = txtDescontoVenda.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoVenda.getText());
                 atualizarVenda();
-                atualizarCampos();
+                atualizarCamposVendaAtual();
+            }
+        });
+        
+        txtDescontoVenda.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> {
+                        descontoVenda = txtDescontoVenda.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoVenda.getText());
+                        atualizarVenda();
+                        atualizarCamposVendaAtual();
+                    }
+                }
             }
         });
         
@@ -149,10 +161,9 @@ public class MainControlador extends JFrame {
     
     private void novaVenda() {
         venda = new Venda(null, 0.0, null);
-        atualizarCampos();
+        atualizarCamposNovaVenda();
         atualizarItemVendaTabela();
         atualizarPagamentoTabela();
-        limparCampos();
     }
     
     private void abrirClienteTabelaControlador() {
@@ -161,7 +172,7 @@ public class MainControlador extends JFrame {
             this.cliente = cliente1;
             exibirCliente();
             atualizarVenda();
-            atualizarCampos();
+            atualizarCamposVendaAtual();
             cliente = null;
             synchronized (MainControlador.this) {
                 MainControlador.this.notify();
@@ -213,15 +224,33 @@ public class MainControlador extends JFrame {
         };
     }
     
-    private void atualizarCampos() {
-        txtValorTotalVenda.setText(FormatarUtil.formataCasaDecimal(venda.getValorTotal()));
-        txtDescontoVenda.setText(FormatarUtil.formataCasaDecimal(venda.getDesconto()));
-        txtTotalPago.setText(FormatarUtil.formataCasaDecimal(venda.getValorTotalPago()));
-        txtSaldoFinal.setText(FormatarUtil.formataCasaDecimal(venda.getValorParcialPago()));
-        txtDescontoProduto.setText("0.0");
+    private void atualizarCamposNovaVenda() {
         qtdProduto = 1;
         descontoItem = 0.00;
         descontoVenda = 0.00;
+        txtValorTotalVenda.setText(FormatarUtil.valorParaBR(venda.getValorTotal()));
+        txtDescontoVenda.setText(FormatarUtil.valorParaBR(descontoVenda));
+        txtTotalPago.setText(FormatarUtil.valorParaBR(venda.getValorTotalPago()));
+        txtSaldoFinal.setText(FormatarUtil.valorParaBR(venda.getValorParcialPago()));
+        txtDescontoProduto.setText(FormatarUtil.valorParaBR(descontoItem));
+        txtCodigoProduto.setText("");
+        txtDescricaoProduto.setText("");
+        txtQtd.setText(String.valueOf(qtdProduto));
+        txtCodigoCliente.setText("");
+        txtNomeCliente.setText("");
+    }
+    
+    private void atualizarCamposVendaAtual() {
+        qtdProduto = 1;
+        descontoItem = 0.00;
+        txtValorTotalVenda.setText(FormatarUtil.valorParaBR(venda.getValorTotal()));
+        txtDescontoVenda.setText(FormatarUtil.valorParaBR(descontoVenda));
+        txtTotalPago.setText(FormatarUtil.valorParaBR(venda.getValorTotalPago()));
+        txtSaldoFinal.setText(FormatarUtil.valorParaBR(venda.getValorParcialPago()));
+        txtDescontoProduto.setText(FormatarUtil.valorParaBR(descontoItem));
+        txtCodigoProduto.setText("");
+        txtDescricaoProduto.setText("");
+        txtQtd.setText(String.valueOf(qtdProduto));
     }
     
     private void exibirProduto() {
@@ -237,8 +266,7 @@ public class MainControlador extends JFrame {
     private void addProduto() {
         addItemVenda();
         atualizarItemVendaTabela();
-        atualizarCampos();
-        limparCamposProduto();
+        atualizarCamposVendaAtual();
     }
     
     private void addItemVenda() {
@@ -279,7 +307,7 @@ public class MainControlador extends JFrame {
     private void atualizarPagamentoTabela() {
         MainPagamentoTabelaModelo modelo = new MainPagamentoTabelaModelo(venda.getPagamentos());
         tabelaPagamentos.setModel(modelo);
-        atualizarCampos();
+        atualizarCamposVendaAtual();
     }
     
     private void atualizarItemVendaTabela() {
@@ -290,19 +318,6 @@ public class MainControlador extends JFrame {
     private void atualizarVenda() {
         venda.setCliente(cliente);
         venda.setDesconto(descontoVenda);
-    }
-    
-    private void limparCamposProduto() {
-        txtCodigoProduto.setText("");
-        txtDescontoProduto.setText("0.0");
-        txtDescricaoProduto.setText("");
-        txtQtd.setText(String.valueOf(qtdProduto));
-    }
-    
-    private void limparCampos() {
-        txtCodigoCliente.setText("");
-        txtNomeCliente.setText("");
-        txtDescontoVenda.setText("0.0");
     }
     
     @Override
@@ -694,11 +709,6 @@ public class MainControlador extends JFrame {
         btSalvarVenda.setForeground(new java.awt.Color(255, 255, 255));
         btSalvarVenda.setText("Finalizar venda (F5)");
         btSalvarVenda.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btSalvarVenda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btSalvarVendaActionPerformed(evt);
-            }
-        });
 
         btNovaVenda.setBackground(new java.awt.Color(0, 0, 102));
         btNovaVenda.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -886,10 +896,6 @@ public class MainControlador extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btSalvarVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarVendaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btSalvarVendaActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel background;

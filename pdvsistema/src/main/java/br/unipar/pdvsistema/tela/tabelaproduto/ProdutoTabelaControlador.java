@@ -4,6 +4,7 @@ import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Produto;
 import br.unipar.pdvsistema.model.repositorio.ProdutoRepositorio;
 import br.unipar.pdvsistema.model.servico.ProdutoServico;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.awt.Component;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -133,7 +134,7 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
             String descricao = tabelaProdutos.getValueAt(rowIndex, 1).toString();
             String valorUnit = tabelaProdutos.getValueAt(rowIndex, 2).toString();
             
-            Produto produto = new Produto(Long.valueOf(codigo), descricao, Double.valueOf(valorUnit));
+            Produto produto = new Produto(Long.valueOf(codigo), descricao, FormatarUtil.valorParaDouble(valorUnit));
             
             if (produtoSelecionadoListener != null) {
                 produtoSelecionadoListener.produtoSelecionado(produto);
@@ -212,32 +213,32 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
         tabelaProdutos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         tabelaProdutos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Código", "Nome", "CPF", "Telefone"
+                "Código", "Descrição", "valor Unit"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Long.class, java.lang.String.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -252,6 +253,8 @@ public class ProdutoTabelaControlador extends javax.swing.JFrame {
         if (tabelaProdutos.getColumnModel().getColumnCount() > 0) {
             tabelaProdutos.getColumnModel().getColumn(0).setMinWidth(50);
             tabelaProdutos.getColumnModel().getColumn(0).setMaxWidth(50);
+            tabelaProdutos.getColumnModel().getColumn(2).setMinWidth(110);
+            tabelaProdutos.getColumnModel().getColumn(2).setMaxWidth(110);
         }
 
         jPanel3.setBackground(new java.awt.Color(102, 102, 102));

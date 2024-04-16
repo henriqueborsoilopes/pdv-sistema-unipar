@@ -1,6 +1,7 @@
 package br.unipar.pdvsistema.tela;
 
 import br.unipar.pdvsistema.model.entidade.ItemVenda;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
@@ -30,10 +31,10 @@ public class MainItemVendaTabelaModelo extends AbstractTableModel {
         return switch (columnIndex) {
             case 0 -> item.getProduto().getId();
             case 1 -> item.getDescricao();
-            case 2 -> item.getValorUnit();
+            case 2 -> FormatarUtil.valorParaBR(item.getValorUnit());
             case 3 -> item.getQuantidade();
-            case 4 -> item.getDesconto();
-            case 5 -> item.getValorTotalItem();
+            case 4 -> FormatarUtil.valorParaBR(item.getDesconto());
+            case 5 -> FormatarUtil.valorParaBR(item.getValorTotalItem());
             default -> null;
         };
     }

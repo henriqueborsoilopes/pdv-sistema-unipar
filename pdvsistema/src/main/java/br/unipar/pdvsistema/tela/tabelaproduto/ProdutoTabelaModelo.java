@@ -1,6 +1,7 @@
 package br.unipar.pdvsistema.tela.tabelaproduto;
 
 import br.unipar.pdvsistema.model.entidade.Produto;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
@@ -30,7 +31,7 @@ public class ProdutoTabelaModelo extends AbstractTableModel {
         return switch (columnIndex) {
             case 0 -> produto.getId();
             case 1 -> produto.getDescricao();
-            case 2 -> produto.getValorUnit();
+            case 2 -> FormatarUtil.valorParaBR(produto.getValorUnit());
             default -> null;
         };
     }

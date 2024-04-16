@@ -1,6 +1,10 @@
 package br.unipar.pdvsistema.util;
 
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FormatarUtil {
     
@@ -8,22 +12,16 @@ public class FormatarUtil {
         return (int) Math.ceil(valor);
     }
     
-    public static String formataCasaDecimal(double valor) {
-        DecimalFormat df = new DecimalFormat("#.##");
-        return df.format(valor);
+    public static String valorParaBR(double valor) {
+        return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR")).format(valor);
     }
     
-//    public static String doubleParaReal(Double valor) {
-//        DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
-//        simbolos.setDecimalSeparator(',');
-//        simbolos.setGroupingSeparator('.');
-//        DecimalFormat formato = new DecimalFormat("#,##0.00", simbolos);
-//        return formato.format(valor);
-//    }
-//    
-//    public static Double realParaDouble(String valor) {
-//        valor = valor.replaceAll("\\.", "");
-//        valor = valor.replace(',', '.');
-//        return Double.valueOf(valor);
-//    }
+    public static Double valorParaDouble(String valor) {
+        try {
+            return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR")).parse(valor).doubleValue();
+        } catch (ParseException ex) {
+            Logger.getLogger(FormatarUtil.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 }

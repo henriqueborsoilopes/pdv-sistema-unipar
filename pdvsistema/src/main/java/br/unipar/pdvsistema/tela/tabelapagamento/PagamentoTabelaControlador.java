@@ -41,7 +41,7 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 valorPago = txtValorEscolhido.getText().isEmpty() ? valorTotalVenda : Double.valueOf(txtValorEscolhido.getText());
-                txtValorEscolhido.setText(valorPago.toString());
+                txtValorEscolhido.setText(FormatarUtil.valorParaBR(valorPago));
                 atualizarPagamento();
             }
         });
@@ -74,8 +74,8 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
         }
         tipoPagamento = (String) comboTipoPagamento.getSelectedItem();
         comboQtdParcela.addItem("1");
-        txtValorEscolhido.setText(FormatarUtil.formataCasaDecimal(valorTotalVenda));
-        txtValorParcela.setText(FormatarUtil.formataCasaDecimal(valorTotalVenda));
+        txtValorEscolhido.setText(FormatarUtil.valorParaBR(valorTotalVenda));
+        txtValorParcela.setText(FormatarUtil.valorParaBR(valorTotalVenda));
     }
         
     private KeyAdapter keyPressed() {
@@ -91,7 +91,7 @@ public class PagamentoTabelaControlador extends javax.swing.JFrame {
     
     private void atualizarPagamento() {
         Double resultado = valorPago / qtdParcela;
-        txtValorParcela.setText(FormatarUtil.formataCasaDecimal(resultado));
+        txtValorParcela.setText(FormatarUtil.valorParaBR(resultado));
     }
     
     public void addPagamentoSelecionadoListener(PagamentoSelecionadoListener pagamentoSelecionadoListener) {

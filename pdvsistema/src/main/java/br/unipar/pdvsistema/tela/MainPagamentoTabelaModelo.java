@@ -1,6 +1,7 @@
 package br.unipar.pdvsistema.tela;
 
 import br.unipar.pdvsistema.model.entidade.Pagamento;
+import br.unipar.pdvsistema.util.FormatarUtil;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
@@ -30,7 +31,7 @@ public class MainPagamentoTabelaModelo extends AbstractTableModel {
         return switch (columnIndex) {
             case 0 -> pagamento.getTipoPagamento().getDescricao();
             case 1 -> pagamento.getParcelas();
-            case 2 -> pagamento.getValorPago();
+            case 2 -> FormatarUtil.valorParaBR(pagamento.getValorPago());
             default -> null;
         };
     }
