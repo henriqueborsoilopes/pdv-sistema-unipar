@@ -98,7 +98,7 @@ public class MainControlador extends javax.swing.JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 String valor = txtDescontoProduto.getText();
-                descontoItem = valor.isEmpty() ? descontoItem : Double.valueOf(valor); 
+                descontoItem = valor.isEmpty() ? descontoItem : FormatarUtil.valorParaDouble(valor); 
                 txtDescontoProduto.setText(FormatarUtil.valorParaBR(descontoItem));
             }
         });
@@ -230,7 +230,7 @@ public class MainControlador extends javax.swing.JFrame {
     
     private void atualizarDescontoVenda() {
         String valor = txtDescontoVenda.getText();
-        descontoVenda = valor.isEmpty() ? descontoVenda : Double.valueOf(valor);
+        descontoVenda = valor.isEmpty() ? descontoVenda : FormatarUtil.valorParaDouble(valor);
     }
     
     private void atualizarCamposNovaVenda() {

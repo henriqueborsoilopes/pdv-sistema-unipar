@@ -45,7 +45,7 @@ public class Venda {
     }
     
     public Double getValorParcialPago() {
-        return getValorTotal() - getValorTotalPago();
+        return getValorTotal() - getValorTotalPago() - desconto;
     }
     
     public Double getValorTotalPago() {
@@ -61,7 +61,7 @@ public class Venda {
         for (ItemVenda item : itens) {
             valorTotalItem += item.getValorTotalItem();
         }
-        return valorTotalItem - desconto;
+        return valorTotalItem;
     }
 
     public Long getId() {
