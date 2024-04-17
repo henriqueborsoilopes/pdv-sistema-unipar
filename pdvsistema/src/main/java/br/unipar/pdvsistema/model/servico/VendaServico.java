@@ -6,8 +6,6 @@ import br.unipar.pdvsistema.model.repositorio.VendaRepositorio;
 import br.unipar.pdvsistema.model.servico.excecao.BancoDadosExcecao;
 import br.unipar.pdvsistema.model.servico.excecao.ValidacaoExcecao;
 import br.unipar.pdvsistema.model.servico.infra.ConexaoBD;
-import br.unipar.pdvsistema.model.servico.infra.ControladorBD;
-import br.unipar.pdvsistema.model.servico.infra.TransacaoBD;
 import br.unipar.pdvsistema.model.servico.validacao.VendaValidacao;
 
 public class VendaServico {
@@ -24,16 +22,15 @@ public class VendaServico {
             venda.setCliente(new Cliente(null, "Consumidor Geral", null, null));
         }
         try {
-            TransacaoBD.getTransaction().begin();
+            ConexaoBD.getEntityManager().getTransaction().begin();
             venda = vendaRepository.inserir(venda);
-            TransacaoBD.getTransaction().commit();
+            ConexaoBD.getEntityManager().getTransaction().commit();
             return venda;
         } catch (Exception e) {
-            TransacaoBD.getTransaction().rollback();
+            ConexaoBD.getEntityManager().getTransaction().rollback();
             throw new BancoDadosExcecao("Desculpe, ocorreu um erro ao processar sua solicitação. Por favor, tente novamente mais tarde.");
         } finally {
-            ControladorBD.closeEntityManager();
-            ConexaoBD.closeEntityManagerFactory();
+            ConexaoBD.closeEntityManager();
         }
     }
 }

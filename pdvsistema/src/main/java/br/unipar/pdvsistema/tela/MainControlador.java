@@ -9,6 +9,7 @@ import br.unipar.pdvsistema.model.repositorio.VendaRepositorio;
 import br.unipar.pdvsistema.model.servico.VendaServico;
 import br.unipar.pdvsistema.model.servico.excecao.BancoDadosExcecao;
 import br.unipar.pdvsistema.model.servico.excecao.ValidacaoExcecao;
+import br.unipar.pdvsistema.model.servico.infra.ConexaoBD;
 import br.unipar.pdvsistema.tela.relatorio.RelatorioControlador;
 import br.unipar.pdvsistema.tela.tabelacliente.ClienteTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelapagamento.PagamentoTabelaControlador;
@@ -19,10 +20,11 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.JFrame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
 
-public class MainControlador extends JFrame {
+public class MainControlador extends javax.swing.JFrame {
     
     private Integer qtdProduto = 1;
     private Double descontoItem = 0.00;
@@ -32,10 +34,10 @@ public class MainControlador extends JFrame {
     private Venda venda;
     
     public MainControlador() {
+        ConexaoBD.getEntityManagerFactory();
         initComponents();
         setLocationRelativeTo(null);
-        setVisible(true);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(MainControlador.MAXIMIZED_BOTH);
         novaVenda();
         atulizarColunasLinhasTabelaItem();
         atulizarColunasLinhasTabelaPagamento();
@@ -95,8 +97,9 @@ public class MainControlador extends JFrame {
             }
             @Override
             public void focusLost(FocusEvent e) {
-               descontoItem = txtDescontoProduto.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoProduto.getText()); 
-               txtDescontoProduto.setText(FormatarUtil.valorParaBR(descontoItem));
+                String valor = txtDescontoProduto.getText();
+                descontoItem = valor.isEmpty() ? descontoItem : Double.valueOf(valor); 
+                txtDescontoProduto.setText(FormatarUtil.valorParaBR(descontoItem));
             }
         });
         
@@ -107,22 +110,9 @@ public class MainControlador extends JFrame {
             }
             @Override
             public void focusLost(FocusEvent e) {
-                descontoVenda = txtDescontoVenda.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoVenda.getText());
+                atualizarDescontoVenda();
                 atualizarVenda();
                 atualizarCamposVendaAtual();
-            }
-        });
-        
-        txtDescontoVenda.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_ENTER -> {
-                        descontoVenda = txtDescontoVenda.getText().isEmpty() ? 0.0 : Double.valueOf(txtDescontoVenda.getText());
-                        atualizarVenda();
-                        atualizarCamposVendaAtual();
-                    }
-                }
             }
         });
         
@@ -133,8 +123,22 @@ public class MainControlador extends JFrame {
             }
             @Override
             public void focusLost(FocusEvent e) {
-                qtdProduto = txtQtd.getText().isEmpty() ? 1 : Integer.valueOf(txtQtd.getText());
+                String valor = txtQtd.getText();
+                qtdProduto = valor.isEmpty() ? qtdProduto : Integer.valueOf(txtQtd.getText());
                 txtQtd.setText(String.valueOf(qtdProduto));
+            }
+        });
+        
+        txtDescontoVenda.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> {
+                        atualizarDescontoVenda();
+                        atualizarVenda();
+                        atualizarCamposVendaAtual();
+                    }
+                }
             }
         });
     }
@@ -222,6 +226,11 @@ public class MainControlador extends JFrame {
                 }
             }
         };
+    }
+    
+    private void atualizarDescontoVenda() {
+        String valor = txtDescontoVenda.getText();
+        descontoVenda = valor.isEmpty() ? descontoVenda : Double.valueOf(valor);
     }
     
     private void atualizarCamposNovaVenda() {
@@ -319,12 +328,16 @@ public class MainControlador extends JFrame {
         venda.setCliente(cliente);
         venda.setDesconto(descontoVenda);
     }
-    
+
     @Override
     public void dispose() {
-        super.dispose(); 
+        int resposta = JOptionPane.showConfirmDialog(MainControlador.this, "Deseja realmente fechar a janela?", "Confirmação", JOptionPane.YES_NO_OPTION);
+        if (resposta == JOptionPane.YES_OPTION) {
+            ConexaoBD.closeEntityManagerFactory();
+            super.dispose();
+        }
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -418,7 +431,7 @@ public class MainControlador extends JFrame {
 
         jMenuItem1.setText("jMenuItem1");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("PDV");
         setBackground(new java.awt.Color(0, 102, 102));
         setName("main"); // NOI18N
@@ -784,19 +797,20 @@ public class MainControlador extends JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btNovaVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btNovaVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtDescontoVenda)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtTotalPago)
                             .addComponent(txtSaldoFinal)
-                            .addComponent(txtValorTotalVenda, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))))
+                            .addComponent(txtDescontoVenda, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtValorTotalVenda))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -810,7 +824,7 @@ public class MainControlador extends JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtDescontoVenda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(47, 47, 47)
+                .addGap(44, 44, 44)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTotalPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))

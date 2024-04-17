@@ -3,7 +3,6 @@ package br.unipar.pdvsistema.model.repositorio;
 import br.unipar.pdvsistema.dto.PaginaDTO;
 import br.unipar.pdvsistema.model.entidade.Cliente;
 import br.unipar.pdvsistema.model.servico.infra.ConexaoBD;
-import br.unipar.pdvsistema.model.servico.infra.ControladorBD;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
 public class ClienteRepositorio {
     
     public PaginaDTO acharTodosPaginado(String nome, int numPagina, int tamPagina) {
-        EntityManager em = ControladorBD.getEntityManager();
+        EntityManager em = ConexaoBD.getEntityManager();
         
         String query = "SELECT DISTINCT obj FROM Cliente obj WHERE obj.nome LIKE :nome ORDER BY obj.nome ASC";
         TypedQuery<Cliente> authorQuery = em.createQuery(query, Cliente.class);
@@ -25,8 +24,7 @@ public class ClienteRepositorio {
         
         List<Cliente> clientes = authorQuery.getResultList();
         
-        ControladorBD.closeEntityManager();
-        ConexaoBD.closeEntityManagerFactory();
+        ConexaoBD.closeEntityManager();
         
         PaginaDTO<Cliente> entidades = new PaginaDTO(numPagina, tamPagina, totalElementos);
         entidades.getConteudo().addAll(clientes);

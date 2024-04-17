@@ -16,10 +16,8 @@ br\unipar\pdvsistema\tela\tabelacliente\ClienteTabelaControlador.class
 br\unipar\pdvsistema\tela\MainControlador$7.class
 br\unipar\pdvsistema\model\servico\excecao\ValidacaoExcecao.class
 br\unipar\pdvsistema\model\repositorio\ClienteRepositorio.class
-br\unipar\pdvsistema\model\servico\infra\ControladorBD.class
 br\unipar\pdvsistema\tela\tabelacliente\ClienteTabelaControlador$4.class
 br\unipar\pdvsistema\tela\MainPagamentoTabelaModelo.class
-br\unipar\pdvsistema\model\servico\infra\TransacaoBD.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador$4.class
 br\unipar\pdvsistema\tela\MainControlador$1.class
 br\unipar\pdvsistema\tela\tabelaproduto\ProdutoTabelaControlador.class
