@@ -96,4 +96,5 @@ public class Pagamento {
         final Pagamento other = (Pagamento) obj;
         return Objects.equals(this.id, other.id);
     }
+    
 }

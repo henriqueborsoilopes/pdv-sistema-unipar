@@ -4,6 +4,8 @@ import br.unipar.pdvsistema.model.entidade.pk.ItemVendaPK;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.text.DecimalFormat;
+import java.util.Locale;
 
 @Entity
 @Table(name = "tb_item_venda")
@@ -44,7 +46,9 @@ public class ItemVenda {
     }
     
     public Double getValorTotalItem() {
-        return (quantidade * valorUnit) - desconto;
+        double total = (quantidade * valorUnit) - desconto;
+        String formattedTotal = String.format(Locale.US, "%.2f", total);
+        return Double.valueOf(formattedTotal);
     }
 
     public String getDescricao() {

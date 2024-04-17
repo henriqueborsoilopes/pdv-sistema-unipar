@@ -9,6 +9,8 @@ import br.unipar.pdvsistema.model.repositorio.VendaRepositorio;
 import br.unipar.pdvsistema.model.servico.VendaServico;
 import br.unipar.pdvsistema.model.servico.excecao.BancoDadosExcecao;
 import br.unipar.pdvsistema.model.servico.excecao.ValidacaoExcecao;
+import br.unipar.pdvsistema.tela.dialog.EditarItemVendaDialog;
+import br.unipar.pdvsistema.tela.dialog.EditarPagamentoDialog;
 import br.unipar.pdvsistema.tela.relatorio.RelatorioControlador;
 import br.unipar.pdvsistema.tela.tabelacliente.ClienteTabelaControlador;
 import br.unipar.pdvsistema.tela.tabelapagamento.PagamentoTabelaControlador;
@@ -198,6 +200,8 @@ public class MainControlador extends JFrame {
                     case KeyEvent.VK_F9 -> novaVenda();
                     case KeyEvent.VK_F5 -> salvarVenda();
                     case KeyEvent.VK_F3 -> abrirPagamentoTabelaControlador();
+                    case KeyEvent.VK_F4 -> editarLinhas();
+                    case KeyEvent.VK_F6 -> editarLinhas();
                 }
             }
         };
@@ -285,6 +289,8 @@ public class MainControlador extends JFrame {
         txtDescontoVenda.setText("0.0");
     }
     
+    
+    
     @Override
     public void dispose() {
         super.dispose(); 
@@ -321,6 +327,8 @@ public class MainControlador extends JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         tabelaPagamentos = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
+        jbEditar = new javax.swing.JButton();
+        jbExcluir = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         btSalvarVenda = new javax.swing.JButton();
         btNovaVenda = new javax.swing.JButton();
@@ -411,6 +419,11 @@ public class MainControlador extends JFrame {
         btAdicionarProduto.setForeground(new java.awt.Color(255, 255, 255));
         btAdicionarProduto.setText("Adicionar (Enter)");
         btAdicionarProduto.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btAdicionarProduto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAdicionarProdutoActionPerformed(evt);
+            }
+        });
 
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -445,6 +458,11 @@ public class MainControlador extends JFrame {
         btNovoProduto.setForeground(new java.awt.Color(255, 255, 255));
         btNovoProduto.setText("+ Novo produto (F1)");
         btNovoProduto.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btNovoProduto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btNovoProdutoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -523,6 +541,11 @@ public class MainControlador extends JFrame {
             }
         });
         tabelaItens.setColumnSelectionAllowed(true);
+        tabelaItens.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelaItensMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tabelaItens);
         tabelaItens.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         if (tabelaItens.getColumnModel().getColumnCount() > 0) {
@@ -656,15 +679,47 @@ public class MainControlador extends JFrame {
         jPanel6.setBackground(new java.awt.Color(102, 102, 102));
         jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        jbEditar.setBackground(new java.awt.Color(204, 102, 0));
+        jbEditar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jbEditar.setForeground(new java.awt.Color(255, 255, 255));
+        jbEditar.setText("Editar (F4)");
+        jbEditar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jbEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbEditarActionPerformed(evt);
+            }
+        });
+
+        jbExcluir.setBackground(new java.awt.Color(204, 102, 0));
+        jbExcluir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jbExcluir.setForeground(new java.awt.Color(255, 255, 255));
+        jbExcluir.setText("Excluir (F6)");
+        jbExcluir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jbExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbExcluirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jbExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(jbEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 69, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap(18, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jbEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15))
         );
 
         jPanel3.setBackground(new java.awt.Color(102, 102, 102));
@@ -881,6 +936,62 @@ public class MainControlador extends JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btSalvarVendaActionPerformed
 
+    private void btAdicionarProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAdicionarProdutoActionPerformed
+        // TODO add your handling code here:
+        addProduto();
+    }//GEN-LAST:event_btAdicionarProdutoActionPerformed
+
+    private void jbEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEditarActionPerformed
+        // TODO add your handling code here:
+        editarLinhas();
+    }//GEN-LAST:event_jbEditarActionPerformed
+
+    private void btNovoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btNovoProdutoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btNovoProdutoActionPerformed
+
+    private void tabelaItensMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelaItensMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tabelaItensMouseClicked
+
+    private void jbExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbExcluirActionPerformed
+        // TODO add your handling code here:
+        excluirLinhas();
+    }//GEN-LAST:event_jbExcluirActionPerformed
+    
+    private void editarLinhas(){
+        if (tabelaItens.getSelectedRow() != -1) {
+        int linha = tabelaItens.getSelectedRow();
+        ItemVenda item = ((MainItemVendaTabelaModelo) tabelaItens.getModel()).getItemVenda(linha);
+        EditarItemVendaDialog dialog = new EditarItemVendaDialog(item, (MainItemVendaTabelaModelo) tabelaItens.getModel());
+        dialog.setVisible(true);
+        } else if (tabelaPagamentos.getSelectedRow() != -1) {
+            int linha = tabelaPagamentos.getSelectedRow();
+            Pagamento pagamento = ((MainPagamentoTabelaModelo) tabelaPagamentos.getModel()).getPagamento(linha);
+            EditarPagamentoDialog dialog = new EditarPagamentoDialog(pagamento, (MainPagamentoTabelaModelo) tabelaPagamentos.getModel());
+            dialog.setVisible(true);
+        }
+    }
+    
+    private void excluirLinhas(){
+        if (tabelaItens.getSelectedRow() != -1 ) {
+            int linha = tabelaItens.getSelectedRow();
+            if (linha != -1) {
+                // Obtém o item de venda da linha selecionada
+                ItemVenda item = ((MainItemVendaTabelaModelo) tabelaItens.getModel()).getItemVenda(linha);
+                // Remove o item de venda da venda
+                venda.removerItem(item);
+                // Atualiza a tabela de itens de venda
+                atualizarItemVendaTabela();
+            }
+        } else if (tabelaPagamentos.getSelectedRow() != -1) {
+                int linha = tabelaPagamentos.getSelectedRow();
+                Pagamento pagamento = ((MainPagamentoTabelaModelo) tabelaPagamentos.getModel()).getPagamento(linha);
+                venda.removerPagamento(pagamento);
+                atualizarPagamentoTabela();
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel background;
     private javax.swing.JButton btAdicionarDesconto;
@@ -911,6 +1022,8 @@ public class MainControlador extends JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField3;
+    private javax.swing.JButton jbEditar;
+    private javax.swing.JButton jbExcluir;
     private javax.swing.JTable tabelaItens;
     private javax.swing.JTable tabelaPagamentos;
     private javax.swing.JTextField txtCodigoCliente;

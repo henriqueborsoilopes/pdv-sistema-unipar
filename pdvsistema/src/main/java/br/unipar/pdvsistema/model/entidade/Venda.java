@@ -125,4 +125,14 @@ public class Venda {
         final Venda other = (Venda) obj;
         return Objects.equals(this.id, other.id);
     }
+    
+    public void removerItem(ItemVenda item){
+        this.itens.remove(item);
+        item.setVenda(null);
+    }
+    
+    public void removerPagamento(Pagamento pagamento) {
+        this.pagamentos.remove(pagamento);
+    }
+    
 }

@@ -42,4 +42,9 @@ public class MainItemVendaTabelaModelo extends AbstractTableModel {
     public String getColumnName(int column) {
         return colunas[column];
     }
+    
+    public ItemVenda getItemVenda(int rowIndex) {
+        return itens.get(rowIndex);
+    }
+    
 }

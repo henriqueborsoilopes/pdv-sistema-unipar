@@ -39,4 +39,9 @@ public class MainPagamentoTabelaModelo extends AbstractTableModel {
     public String getColumnName(int column) {
         return colunas[column];
     }
+    
+    public Pagamento getPagamento(int rowIndex) {
+        return pagamentos.get(rowIndex);
+    }
+
 }
